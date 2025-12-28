@@ -1,0 +1,48 @@
+{
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "endOfLine": "lf",
+  "semi": false,
+  "singleQuote": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "bracketSameLine": true,
+  "printWidth": 100,
+  "overrides": [
+    {
+      "files": "*.{js,ts,tsx,mjs}",
+      "options": {
+        "trailingComma": "es5",
+        "tabWidth": 2,
+        "endOfLine": "lf",
+        "semi": false,
+        "singleQuote": true,
+        "arrowParens": "always",
+        "bracketSpacing": true,
+        "embeddedLanguageFormatting": "auto",
+        "htmlWhitespaceSensitivity": "css",
+        "bracketSameLine": true,
+        "jsxSingleQuote": true,
+        "parser": "typescript",
+        "printWidth": 110,
+        "proseWrap": "preserve",
+        "quoteProps": "as-needed",
+        "useTabs": false,
+        "vueIndentScriptAndStyle": false
+      }
+    },
+    {
+      "files": "*.vue",
+      "options": {
+        "trailingComma": "all",
+        "tabWidth": 2,
+        "endOfLine": "lf",
+        "semi": false,
+        "singleQuote": true,
+        "htmlWhitespaceSensitivity": "ignore",
+        "bracketSameLine": true,
+        "printWidth": 100,
+        "parser": "vue"
+      }
+    }
+  ]
+}
