@@ -10,9 +10,9 @@ export const AVAILABLE_LANGUAGES: { [key: string]: string } = {
 }
 
 export const ClientCookies = {
-  acceptLanguage: 'accept-language',
-  userID: 'user-id',
-  deviceID: 'device-id',
-  currencyCode: 'currency-code',
-  countryCode: 'country-code',
+  acceptLanguage: 'accept_language',
+  userID: 'user_id',
+  deviceID: 'device_id',
+  currencyCode: 'currency_code',
+  countryCode: 'country_code',
 } as const
