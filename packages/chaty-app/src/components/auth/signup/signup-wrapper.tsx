@@ -1,5 +1,5 @@
 'use client'
-import { TextInput, PasswordInput as PassInput, LoadingOverlay, Button } from '@mantine/core'
+import { TextInput, PasswordInput as PassInput, LoadingOverlay, Button, Text } from '@mantine/core'
 
 import SignupHooks from './signup-hooks'
 import PasswordInput, { PasswordRequirements } from '@/components/ui/input/password-input'
@@ -9,6 +9,8 @@ import {
   USERS_USERNAME_MAX_LENGHT,
   USERS_USERNAME_MIN_LENGHT,
 } from '@/lib/shared'
+import Image from 'next/image'
+import Link from 'next/link'
 
 type Props = {
   tr: { [key: string]: string }
@@ -19,10 +21,21 @@ function SignupWrapper({ tr, passwordRequirements }: Props) {
   const { form, loading, onSubmit } = SignupHooks({ tr })
 
   return (
-    <main className='flex justify-center items-center min-h-screen'>
+    <main className='w-full flex justify-center min-h-screen'>
       {loading && <LoadingOverlay />}
-      <section>
-        <form className='flex flex-col w-150 max-w-162.5'>
+      <section className='w-full flex flex-col items-center'>
+        <div className='relative w-80 h-60'>
+          <Image
+            src='/chaty-logo.png'
+            alt={tr.chatyDesc}
+            fill
+            sizes='100%'
+            priority
+            className='object-fill'
+          />
+        </div>
+        <h1 className='font-bold text-2xl'>{tr.chatyDesc}</h1>
+        <form className='flex flex-col w-150 max-w-162.5 mt-10'>
           <div className='grid grid-cols-2 gap-y-10 gap-x-6 max-w-full wrap-break-word'>
             <TextInput
               type='email'
@@ -41,7 +54,7 @@ function SignupWrapper({ tr, passwordRequirements }: Props) {
               maxLength={USERS_USERNAME_MAX_LENGHT}
               minLength={USERS_USERNAME_MIN_LENGHT}
               size='sm'
-              {...form.getInputProps('email')}
+              {...form.getInputProps('username')}
             />
             <PasswordInput
               fieldName='password'
@@ -59,6 +72,12 @@ function SignupWrapper({ tr, passwordRequirements }: Props) {
               withAsterisk
               {...form.getInputProps('passwordConfirmation')}
             />
+          </div>
+          <div className='mt-6 flex items-center justify-center gap-x-2 '>
+            <p className='font-medium'>{tr.haveAccount}</p>
+            <Link href='/auth/login' className='underline text-blue-700'>
+              {tr.login}{' '}
+            </Link>
           </div>
           <div className='flex justify-center mt-10'>
             <Button onClick={() => onSubmit()} disabled={loading} className=''>

@@ -8,6 +8,18 @@
     "tr": "Please correct the form fields first"
   },
   {
+    "id": "chaty.logo.description",
+    "tr": "A highly scalle chatting/streaming platform"
+  },
+  {
+    "id": "users.create.have_account",
+    "tr": "Have an account?"
+  },
+  {
+    "id": "users.create.login",
+    "tr": "Go to login"
+  },
+  {
     "id": "users.create.chaty_account",
     "tr": "Create a Chaty Account"
   },

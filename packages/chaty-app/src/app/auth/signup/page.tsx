@@ -28,6 +28,9 @@ function getTranslations(lang: string) {
     passwordConf: tr(lang, 'users.create.password_confirmation'),
     passwordConfErr: tr(lang, 'users.create.password_confirmation.error'),
     createChaty: tr(lang, 'users.create.chaty_account'),
+    chatyDesc: tr(lang, 'chaty.logo.description'),
+    haveAccount: tr(lang, 'users.create.have_account'),
+    login: tr(lang, 'users.create.login'),
   }
 }
 
