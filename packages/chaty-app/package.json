@@ -9,9 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@chaty-app/proto": "^0.1.19",
+    "@connectrpc/connect": "^2.1.1",
+    "@connectrpc/connect-web": "^2.1.1",
+    "@fingerprintjs/fingerprintjs": "^5.0.1",
+    "client-only": "^0.0.1",
+    "cookies-next": "^6.1.1",
     "next": "16.1.1",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "server-only": "^0.0.1",
+    "ua-parser-js": "^2.0.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

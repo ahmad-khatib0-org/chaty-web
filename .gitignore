@@ -4,8 +4,6 @@ dist
 
 *.log
 
-.env*
-!.env.example
 .vercel
 
 .idea
