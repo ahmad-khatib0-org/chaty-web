@@ -1,10 +1,70 @@
 [
   {
+    "id": "forms.fields.invalid.title",
+    "tr": "Invalid provided data"
+  },
+  {
+    "id": "forms.fields.invalid.description",
+    "tr": "Please correct the form fields first"
+  },
+  {
+    "id": "users.create.chaty_account",
+    "tr": "Create a Chaty Account"
+  },
+  {
     "id": "users.create.username",
     "tr": "Username"
   },
   {
+    "id": "users.create.username.error",
+    "tr": "username should be between {{Min}} and {{Max}} characters"
+  },
+  {
+    "id": "users.create.username.invalid",
+    "tr": "user name should only contains lower case, dot, hyphen, underscore"
+  },
+  {
     "id": "users.create.email",
     "tr": "Email Address"
+  },
+  {
+    "id": "users.create.email.error",
+    "tr": "Invalid Email Address"
+  },
+  {
+    "id": "users.create.password",
+    "tr": "Strong Password"
+  },
+  {
+    "id": "users.create.password_confirmation",
+    "tr": "Password confirmation"
+  },
+  {
+    "id": "users.create.password_confirmation.error",
+    "tr": "Password confirmation does not match password"
+  },
+  {
+    "id": "password.min_length",
+    "tr": "password minimum length should be {{Min}} characters"
+  },
+  {
+    "id": "password.max_length",
+    "tr": "password maximum length should be {{Max}} characters"
+  },
+  {
+    "id": "password.lowercase",
+    "tr": "password should contains at least one lowercase character"
+  },
+  {
+    "id": "password.uppercase",
+    "tr": "password should contains at least one uppercase character"
+  },
+  {
+    "id": "password.numbers",
+    "tr": "password should contains at least one number"
+  },
+  {
+    "id": "password.symbols",
+    "tr": "password should contains at least one symbol"
   }
 ]

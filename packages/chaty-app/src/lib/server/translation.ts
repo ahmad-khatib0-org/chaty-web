@@ -85,7 +85,6 @@ class TranslationStore {
       }
       this.store.set(langName, langMap)
     }
-    console.log(this.store)
   }
 
   public translate<P extends Record<string, any>>(lang: string, id: string, params?: P): string {
@@ -112,7 +111,7 @@ class TranslationStore {
       if (pool.hasVars && !params) {
         throw new TranslationError({
           type: 'MissingParams',
-          message: 'Missing required template parameters',
+          message: `Missing required template parameters for: ${pool.getTemplateStr}`,
         })
       }
 
