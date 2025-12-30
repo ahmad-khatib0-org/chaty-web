@@ -6,8 +6,9 @@ import '@mantine/core/styles.css'
 import '@mantine/notifications/styles.css'
 import './globals.css'
 
-import { ServerError } from '@/components/app'
 import { system } from '@/lib/server'
+import ServerError from '@/components/app/server-error'
+import ServerWrapper from '@/components/app/server-wrapper'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

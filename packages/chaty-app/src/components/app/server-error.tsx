@@ -7,13 +7,13 @@ type Props = {
   description?: string
 }
 
-export const ServerError = ({ msg, description }: Props) => {
+const ServerError = ({ msg, description }: Props) => {
   const defaultMsg = 'Sorry we encountered some technical issues during you last operation'
   const defaultDesc =
     'Please try to refresh you browser tab, or contact the support team if the problem persists.'
 
   return (
-    <section className='grid grid-cols-[1fr,55%] w-full px-4'>
+    <section className='grid grid-cols-[1fr_55%] w-full px-4'>
       <div className='flex flex-col items-start justify-center mt-12'>
         <h1 style={{ color: '#0d0c22' }} className='text-4xl font-bold'>
           Internal Server Error
@@ -34,3 +34,5 @@ export const ServerError = ({ msg, description }: Props) => {
     </section>
   )
 }
+
+export default ServerError

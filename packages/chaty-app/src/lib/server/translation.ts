@@ -4,11 +4,13 @@ import { cookies } from 'next/headers'
 const Mustache = require('mustache')
 import { ulid } from 'ulid'
 
-import { ClientCookies, DEFAULT_LANGUAGE_SYMBOL } from '../client'
+import { ServerCookies } from '@/types/server'
+import { DEFAULT_LANGUAGE_SYMBOL } from './client-info'
 
-let TRANSLATIONS_DIR = './translations'
+const WORKSPACE_ROOT = path.resolve(process.cwd(), '../../')
+let TRANSLATIONS_DIR = path.join(WORKSPACE_ROOT, 'i18n')
 
-export type Translations = { [key: string]: { [key: string]: string } }
+export type Translations = { [key: string]: { id: string; tr: string }[] }
 
 type TranslationErrorType =
   | { type: 'NotInitialized'; message: string }
@@ -76,12 +78,12 @@ class TranslationStore {
   }
 
   public init(translations: Translations, maxPoolSize: number): void {
-    for (const [lang, elements] of Object.entries(translations)) {
+    for (const [langName, languageTrans] of Object.entries(translations)) {
       const langMap = new Map<string, TemplatePool>()
-      for (const [id, tr] of Object.entries(elements)) {
-        langMap.set(id, new TemplatePool(tr, maxPoolSize))
+      for (const element of languageTrans) {
+        langMap.set(element.id, new TemplatePool(element.tr, maxPoolSize))
       }
-      this.store.set(lang, langMap)
+      this.store.set(langName, langMap)
     }
     console.log(this.store)
   }
@@ -134,7 +136,7 @@ async function loadTranslations() {
     if (file.endsWith('.json')) {
       const lang = file.replace('.json', '')
       const content = await readFile(path.join(TRANSLATIONS_DIR, file), 'utf-8')
-      res[lang] = JSON.parse(content)
+      res[lang] = JSON.parse(content) as { id: string; tr: string }[]
     }
   }
 
@@ -155,6 +157,6 @@ export const Trans = {
 
   getUserLang: async (): Promise<string> => {
     const c = await cookies()
-    return c.get(ClientCookies.acceptLanguage)?.value || DEFAULT_LANGUAGE_SYMBOL
+    return c.get(ServerCookies.AcceptLanguage)?.value || DEFAULT_LANGUAGE_SYMBOL
   },
 }

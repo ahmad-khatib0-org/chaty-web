@@ -1,2 +1,2 @@
+import 'client-only'
 export * from './client-info'
-export * from './network'

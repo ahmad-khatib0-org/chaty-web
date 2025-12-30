@@ -2,7 +2,7 @@ import 'client-only'
 import { createConnectTransport } from '@connectrpc/connect-web'
 import { createClient, Interceptor } from '@connectrpc/connect'
 
-import { ClientInformation } from '@/types'
+import { ClientInformation } from '@/types/client'
 import { trackClient } from './client-info'
 import { ChatyService } from '@chaty-app/proto/web/service/v1/main_pb'
 

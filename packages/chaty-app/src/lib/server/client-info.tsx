@@ -1,6 +1,6 @@
 import { cookies, headers } from 'next/headers'
 
-import { ServerCookies, Headers } from '@/types'
+import { ServerCookies, Headers } from '@/types/server'
 
 export interface ClientInformation {
   languageSymbol: string

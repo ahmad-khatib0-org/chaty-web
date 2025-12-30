@@ -1,0 +1,10 @@
+[
+  {
+    "id": "users.create.username",
+    "tr": "Username"
+  },
+  {
+    "id": "users.create.email",
+    "tr": "Email Address"
+  }
+]

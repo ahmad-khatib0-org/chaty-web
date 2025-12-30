@@ -3,7 +3,7 @@ import { getCookie } from 'cookies-next/client'
 import { UAParser } from 'ua-parser-js'
 import { Agent, load } from '@fingerprintjs/fingerprintjs'
 
-import { ClientInformation, getDefaultLocationInfo, LocationInfo } from '@/types'
+import { ClientInformation, getDefaultLocationInfo, LocationInfo } from '@/types/client'
 import {
   ClientCookies,
   AVAILABLE_LANGUAGES,

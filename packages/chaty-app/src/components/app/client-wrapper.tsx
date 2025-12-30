@@ -1,5 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { Loader } from '@mantine/core'
+
+import { useAppStore } from '@/state'
+import { trackClient } from '@/lib/client'
 
 type Props = {
   clientInfo: {
@@ -34,7 +38,7 @@ function ClientWrapper({ clientInfo }: Props) {
     init()
   }, [])
 
-  if (loading) return <PageLoader />
+  if (loading) return <Loader />
   return null
 }
 

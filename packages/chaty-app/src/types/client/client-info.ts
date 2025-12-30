@@ -1,3 +1,4 @@
+import 'client-only'
 /**
  * ClientInformation represents essential information about a user, like
  *
@@ -129,4 +130,11 @@ export function getDefaultLocationInfo(): LocationInfo {
     asn: '',
     org: undefined,
   }
+}
+
+export interface ClientEssentialInformation {
+  languageName: string
+  languageSymbol: string
+  currency: string
+  country: string
 }
