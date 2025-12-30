@@ -37,8 +37,8 @@ let _grpcClient: ReturnType<typeof createClient<typeof ChatyService>> | null = n
 export function grpcClient() {
   if (_grpcClient) return _grpcClient
 
-  const baseUrl = process.env['NEXT_PUBLIC_USERS_GRPC_ENDPOINT']
-  if (!baseUrl) throw new Error('Missing NEXT_PUBLIC_USERS_GRPC_ENDPOINT')
+  const baseUrl = process.env['NEXT_PUBLIC_GRPC_ENDPOINT']
+  if (!baseUrl) throw new Error('Missing NEXT_PUBLIC_GRPC_ENDPOINT')
 
   const transport = createConnectTransport({
     baseUrl,
