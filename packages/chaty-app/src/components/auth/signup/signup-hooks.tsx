@@ -5,6 +5,8 @@ import { notifications } from '@mantine/notifications'
 
 import { useAppStore } from '@/state'
 import { grpcClient, SignupHelpers, tr as translator } from '@/lib/client'
+import { useRouter } from 'next/navigation'
+import { UsersLoginResponseData } from '@chaty-app/proto/web/service/v1/users_pb'
 
 type Props = {
   tr: { [key: string]: string }
@@ -12,6 +14,7 @@ type Props = {
 
 function SignupHooks({ tr }: Props) {
   const info = useAppStore((state) => state.clientInfo)
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   const form = useForm({
@@ -37,10 +40,12 @@ function SignupHooks({ tr }: Props) {
       const result = await grpcClient().usersCreate({ ...form.getValues() })
       if (result.response.case === 'error') {
         let err = result.response.value
+        SignupHelpers.handleSubmitErrors(err, form)
         notifications.show({ message: err.message, color: 'red', position: 'top-right' })
-      } else {
-        const response = result.response.value
-        console.log(response)
+      } else if (result.response.case === 'data') {
+        const message = result.response.value.message
+        notifications.show({ message, color: 'red', position: 'top-right' })
+        router.push('/auth/login')
       }
     } catch (err) {
     } finally {

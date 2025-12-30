@@ -1,11 +1,13 @@
 import { object, ref, string } from 'yup'
 
+import { AppError } from '@chaty-app/proto/web/shared/v1/error_pb'
 import {
   USERS_PASSWORD_MAX_LENGTH,
   USERS_PASSWORD_MIN_LENGTH,
   USERS_USERNAME_MAX_LENGHT,
   USERS_USERNAME_MIN_LENGHT,
 } from '@/lib/shared'
+import { UseFormReturnType } from '@mantine/form'
 
 export class SignupHelpers {
   constructor() { }
@@ -29,5 +31,12 @@ export class SignupHelpers {
 
   static formValues() {
     return { username: '', email: '', password: '', passwordConfirmation: '' }
+  }
+
+  static handleSubmitErrors(err: AppError, form: UseFormReturnType<ReturnType<typeof this.formValues>>) {
+    const e = err.errors
+    if (e.hasOwnProperty('username')) form.setFieldError('username', e['username'])
+    if (e.hasOwnProperty('email')) form.setFieldError('email', e['email'])
+    if (e.hasOwnProperty('password')) form.setFieldError('password', e['password'])
   }
 }
