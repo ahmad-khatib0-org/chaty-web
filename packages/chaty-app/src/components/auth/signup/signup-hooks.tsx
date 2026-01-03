@@ -4,9 +4,8 @@ import { yupResolver } from 'mantine-form-yup-resolver'
 import { notifications } from '@mantine/notifications'
 
 import { useAppStore } from '@/state'
-import { grpcClient, SignupHelpers, tr as translator } from '@/lib/client'
+import { grpcClient, handleGrpcErr, SignupHelpers, tr as translator } from '@/lib/client'
 import { useRouter } from 'next/navigation'
-import { UsersLoginResponseData } from '@chaty-app/proto/web/service/v1/users_pb'
 
 type Props = {
   tr: { [key: string]: string }
@@ -48,6 +47,8 @@ function SignupHooks({ tr }: Props) {
         router.push('/auth/login')
       }
     } catch (err) {
+      let message = handleGrpcErr(err, info.languageSymbol)
+      notifications.show({ message, color: 'red', position: 'top-right' })
     } finally {
       setLoading(false)
     }

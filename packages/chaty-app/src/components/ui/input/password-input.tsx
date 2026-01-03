@@ -62,6 +62,7 @@ export const PasswordInput = <T,>({
         <div onFocusCapture={() => setOpen(true)} onBlurCapture={() => setOpen(false)}>
           <PassInput
             label={label}
+            type='password'
             withAsterisk
             placeholder={placeholder}
             minLength={minLength}

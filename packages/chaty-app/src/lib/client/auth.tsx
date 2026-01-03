@@ -8,6 +8,7 @@ import {
   USERS_USERNAME_MIN_LENGHT,
 } from '@/lib/shared'
 import { UseFormReturnType } from '@mantine/form'
+import { getCookie, setCookie } from 'cookies-next/client'
 
 export class SignupHelpers {
   constructor() { }
@@ -23,7 +24,7 @@ export class SignupHelpers {
         .min(USERS_PASSWORD_MIN_LENGTH, tr.passMinErr)
         .max(USERS_PASSWORD_MAX_LENGTH, tr.passMaxErr)
         .required(tr.r),
-      password_confirmation: string()
+      passwordConfirmation: string()
         .oneOf([ref('password')], tr.passwordConfErr)
         .required(tr.r),
     })
@@ -38,5 +39,76 @@ export class SignupHelpers {
     if (e.hasOwnProperty('username')) form.setFieldError('username', e['username'])
     if (e.hasOwnProperty('email')) form.setFieldError('email', e['email'])
     if (e.hasOwnProperty('password')) form.setFieldError('password', e['password'])
+  }
+}
+
+export class LoginHelpers {
+  constructor() { }
+
+  private static clientID = process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID!
+  private static redirectURL = process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URL!
+  private static oauthURL = process.env.NEXT_PUBLIC_OAUTH_AUTH_URL!
+
+  static prepareLoginUrl(): URL {
+    const state = crypto.randomUUID()
+
+    setCookie('oauth_state', state, {
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 600,
+    })
+
+    const url = new URL(this.oauthURL)
+    url.searchParams.set('client_id', this.clientID)
+    url.searchParams.set('response_type', 'code')
+    url.searchParams.set('scope', 'openid offline')
+    url.searchParams.set('redirect_uri', this.redirectURL)
+    url.searchParams.set('state', state)
+
+    return url
+  }
+
+  /**
+   * Check if we're in a Hydra login flow (has login_challenge)
+   * OR if we need to start a new OAuth flow
+   */
+  static checkLoginUrl(currentUrl: string): URL | undefined {
+    try {
+      const url = new URL(currentUrl)
+
+      // If we have a login_challenge, we're in Hydra flow - don't redirect
+      if (url.searchParams.get('login_challenge')) return undefined
+
+      // Otherwise, check if we have all OAuth parameters for a new flow
+      const requiredParams = ['client_id', 'response_type', 'scope', 'redirect_uri', 'state']
+
+      for (const param of requiredParams) {
+        const value = url.searchParams.get(param)
+        if (!value || value.trim() === '') {
+          return this.prepareLoginUrl()
+        }
+      }
+
+      const state = url.searchParams.get('state')
+      const stateCookie = getCookie('oauth_state') as string
+
+      if (!stateCookie || stateCookie !== state) {
+        return this.prepareLoginUrl()
+      }
+
+      return undefined
+    } catch (error) {
+      return this.prepareLoginUrl()
+    }
+  }
+
+  static getLoginChallengeParam(location: string): string {
+    try {
+      const url = new URL(location)
+      return url.searchParams.get('login_challenge') ?? ''
+    } catch {
+      return ''
+    }
   }
 }
