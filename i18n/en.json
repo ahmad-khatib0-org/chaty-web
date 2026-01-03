@@ -16,6 +16,38 @@
     "tr": "A highly scalle chatting/streaming platform"
   },
   {
+    "id": "users.email_confirmation.success",
+    "tr": "Your email has been confirmed successfully. You can now log in to your account."
+  },
+  {
+    "id": "users.email_confirmation.already_confirmed",
+    "tr": "Your email has already been confirmed."
+  },
+  {
+    "id": "users.email_confirmation.token_expired",
+    "tr": "The confirmation link has expired. Please request a new confirmation email."
+  },
+  {
+    "id": "users.email_confirmation.token_invalid",
+    "tr": "The confirmation link is invalid. Please request a new confirmation email."
+  },
+  {
+    "id": "users.email_confirmation.title_success",
+    "tr": "Email Confirmed"
+  },
+  {
+    "id": "users.email_confirmation.title_error",
+    "tr": "Confirmation Failed"
+  },
+  {
+    "id": "users.email_confirmation.button_go_to_login",
+    "tr": "Go to Login"
+  },
+  {
+    "id": "users.email_confirmation.button_back_to_login",
+    "tr": "Back to Login"
+  },
+  {
     "id": "users.login.go_to_login",
     "tr": "Go to login page"
   },
