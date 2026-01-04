@@ -112,3 +112,22 @@ export class LoginHelpers {
     }
   }
 }
+
+export class ForgotPasswordHelpers {
+  constructor() { }
+
+  static form(tr: Record<string, string>) {
+    return object().shape({
+      email: string().email(tr.emailInvalid).required(tr.emailInvalid),
+    })
+  }
+
+  static formValues() {
+    return { email: '' }
+  }
+
+  static handleSubmitErrors(err: AppError, form: UseFormReturnType<ReturnType<typeof this.formValues>>) {
+    const e = err.errors
+    if (e.hasOwnProperty('email')) form.setFieldError('email', e['email'])
+  }
+}

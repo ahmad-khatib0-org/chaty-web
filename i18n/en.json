@@ -210,5 +210,45 @@
   {
     "id": "oauth.login_code.invalid",
     "tr": "The login token code is missing from the URL, make sure to not manipulate the Link, Please Try again, if issue presists, Please contact support."
+  },
+  {
+    "id": "users.forgot_password.title",
+    "tr": "Reset Your Password"
+  },
+  {
+    "id": "users.forgot_password.description",
+    "tr": "Enter your email address and we'll send you a link to reset your password."
+  },
+  {
+    "id": "users.forgot_password.email",
+    "tr": "Email Address"
+  },
+  {
+    "id": "users.forgot_password.email_invalid",
+    "tr": "Invalid Email Address"
+  },
+  {
+    "id": "users.forgot_password.submit",
+    "tr": "Send Reset Link"
+  },
+  {
+    "id": "users.forgot_password.back_to_login",
+    "tr": "Back to Login"
+  },
+  {
+    "id": "users.forgot_password.success_title",
+    "tr": "Check Your Email"
+  },
+  {
+    "id": "users.forgot_password.success_message",
+    "tr": "Password reset link has been sent to your email. Please check your inbox and follow the instructions."
+  },
+  {
+    "id": "users.forgot_password.error_title",
+    "tr": "Request Failed"
+  },
+  {
+    "id": "users.forgot_password.error_email_not_found",
+    "tr": "No account found with this email address."
   }
 ]
