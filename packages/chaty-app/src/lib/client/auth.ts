@@ -131,3 +131,28 @@ export class ForgotPasswordHelpers {
     if (e.hasOwnProperty('email')) form.setFieldError('email', e['email'])
   }
 }
+
+export class ResetPasswordHelpers {
+  constructor() { }
+
+  static form(tr: Record<string, string>) {
+    return object().shape({
+      password: string()
+        .min(USERS_PASSWORD_MIN_LENGTH, tr.passMinErr)
+        .max(USERS_PASSWORD_MAX_LENGTH, tr.passMaxErr)
+        .required(tr.required),
+      passwordConfirmation: string()
+        .oneOf([ref('password')], tr.passwordConfErr)
+        .required(tr.required),
+    })
+  }
+
+  static formValues() {
+    return { password: '', passwordConfirmation: '' }
+  }
+
+  static handleSubmitErrors(err: AppError, form: UseFormReturnType<ReturnType<typeof this.formValues>>) {
+    const e = err.errors
+    if (e.hasOwnProperty('password')) form.setFieldError('password', e['password'])
+  }
+}

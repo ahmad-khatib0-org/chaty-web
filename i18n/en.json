@@ -250,5 +250,45 @@
   {
     "id": "users.forgot_password.error_email_not_found",
     "tr": "No account found with this email address."
+  },
+  {
+    "id": "users.reset_password.title",
+    "tr": "Reset Your Password"
+  },
+  {
+    "id": "users.reset_password.description",
+    "tr": "Enter your new password below to reset your account password."
+  },
+  {
+    "id": "users.reset_password.password",
+    "tr": "New Password"
+  },
+  {
+    "id": "users.reset_password.password_confirmation",
+    "tr": "Confirm Password"
+  },
+  {
+    "id": "users.reset_password.password_conf_error",
+    "tr": "Passwords do not match"
+  },
+  {
+    "id": "users.reset_password.submit",
+    "tr": "Reset Password"
+  },
+  {
+    "id": "users.reset_password.back_to_login",
+    "tr": "Back to Login"
+  },
+  {
+    "id": "users.reset_password.success_title",
+    "tr": "Password Reset Successful"
+  },
+  {
+    "id": "users.reset_password.success_message",
+    "tr": "Your password has been reset successfully. You can now log in with your new password."
+  },
+  {
+    "id": "users.reset_password.token_invalid",
+    "tr": "The reset link is invalid or has expired."
   }
 ]

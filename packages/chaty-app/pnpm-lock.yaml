@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@chaty-app/proto':
-        specifier: ^0.1.26
-        version: 0.1.26
+        specifier: ^0.1.28
+        version: 0.1.28
       '@connectrpc/connect':
         specifier: ^2.1.1
         version: 2.1.1(@bufbuild/protobuf@2.10.2)
@@ -186,8 +186,8 @@ packages:
   '@bufbuild/protobuf@2.10.2':
     resolution: {integrity: sha512-uFsRXwIGyu+r6AMdz+XijIIZJYpoWeYzILt5yZ2d3mCjQrWUTVpVD9WL/jZAbvp+Ed04rOhrsk7FiTcEDseB5A==}
 
-  '@chaty-app/proto@0.1.26':
-    resolution: {integrity: sha512-zAoMfICcr28tZM3xf4IKKcQiP1u+/p6IIPQidwQpl8IIESMrQDd0ExiQpIWVP4e6Ip6RCXhvs7KVBBB/UsQs+w==}
+  '@chaty-app/proto@0.1.28':
+    resolution: {integrity: sha512-XwVwray3EHCbwwC+rAsgqfE+cR7PcSfP9cifIsIEw3qpN8I6dKOBhJDg91BKsLw7QV12wr3Bwy+XpwsNQr+6qA==}
 
   '@connectrpc/connect-web@2.1.1':
     resolution: {integrity: sha512-J8317Q2MaFRCT1jzVR1o06bZhDIBmU0UAzWx6xOIXzOq8+k71/+k7MUF7AwcBUX+34WIvbm5syRgC5HXQA8fOg==}
@@ -2503,7 +2503,7 @@ snapshots:
 
   '@bufbuild/protobuf@2.10.2': {}
 
-  '@chaty-app/proto@0.1.26':
+  '@chaty-app/proto@0.1.28':
     dependencies:
       '@bufbuild/protobuf': 2.10.2
       '@connectrpc/connect': 2.1.1(@bufbuild/protobuf@2.10.2)
