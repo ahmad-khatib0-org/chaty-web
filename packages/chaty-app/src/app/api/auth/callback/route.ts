@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
     domain: secure ? undefined : 'localhost',
   })
 
-  response.cookies.set('id_token', id_token, {
+  response.cookies.set(ServerCookies.IdToken, id_token, {
     httpOnly: true,
     secure,
     path: '/',
