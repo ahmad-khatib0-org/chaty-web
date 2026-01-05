@@ -1,5 +1,9 @@
 [
   {
+    "id": "error.unauthenticated",
+    "tr": "Authentication required. Please log in and try again."
+  },
+  {
     "id": "forms.fields.invalid.title",
     "tr": "Invalid provided data"
   },
@@ -290,5 +294,93 @@
   {
     "id": "users.reset_password.token_invalid",
     "tr": "The reset link is invalid or has expired."
+  },
+  {
+    "id": "app.sidebar.home",
+    "tr": "Home"
+  },
+  {
+    "id": "app.sidebar.servers",
+    "tr": "Servers"
+  },
+  {
+    "id": "app.sidebar.chats",
+    "tr": "Chats"
+  },
+  {
+    "id": "app.sidebar.groups",
+    "tr": "Groups"
+  },
+  {
+    "id": "app.sidebar.saved_messages",
+    "tr": "Saved Messages"
+  },
+  {
+    "id": "app.sidebar.settings",
+    "tr": "Settings"
+  },
+  {
+    "id": "app.sidebar.logout",
+    "tr": "Logout"
+  },
+  {
+    "id": "app.sidebar.logout_confirmation_title",
+    "tr": "Confirm Logout"
+  },
+  {
+    "id": "app.sidebar.logout_confirmation_message",
+    "tr": "Are you sure you want to logout?"
+  },
+  {
+    "id": "app.sidebar.cancel",
+    "tr": "Cancel"
+  },
+  {
+    "id": "app.home.title",
+    "tr": "Home"
+  },
+  {
+    "id": "app.home.description",
+    "tr": "Welcome to your Chaty home"
+  },
+  {
+    "id": "app.servers.title",
+    "tr": "Servers"
+  },
+  {
+    "id": "app.servers.description",
+    "tr": "Manage and browse your servers"
+  },
+  {
+    "id": "app.chats.title",
+    "tr": "Chats"
+  },
+  {
+    "id": "app.chats.description",
+    "tr": "Your direct messages and conversations"
+  },
+  {
+    "id": "app.groups.title",
+    "tr": "Groups"
+  },
+  {
+    "id": "app.groups.description",
+    "tr": "Manage your group conversations"
+  },
+  {
+    "id": "app.saved.title",
+    "tr": "Saved Messages"
+  },
+  {
+    "id": "app.saved.description",
+    "tr": "Your saved messages and bookmarks"
+  },
+  {
+    "id": "app.settings.title",
+    "tr": "Settings"
+  },
+  {
+    "id": "app.settings.description",
+    "tr": "Manage your account and preferences"
   }
 ]
