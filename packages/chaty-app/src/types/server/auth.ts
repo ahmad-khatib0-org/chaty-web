@@ -8,3 +8,9 @@ export interface ConsentRequest {
 export interface ConsentAcceptResult {
   redirect_to: string
 }
+
+export interface AuthCheckResponse {
+  email: string
+  success: boolean
+  isInternalError: boolean
+}

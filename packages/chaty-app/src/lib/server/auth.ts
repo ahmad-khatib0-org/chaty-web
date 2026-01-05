@@ -1,6 +1,8 @@
 import 'server-only'
+import { headers } from 'next/headers'
 const CircuitBreaker = require('opossum')
 
+import { AuthCheckResponse } from '@/types/server'
 import { Trans } from './translation'
 
 export function getPasswordRequirements(lang: string) {
@@ -107,6 +109,84 @@ class OAuthServiceStatusChecker {
 }
 
 export const oauthServiceStatusChecker = new OAuthServiceStatusChecker()
+
+/**
+ * Checks user authentication against the check endpoint with retry mechanism.
+ * @param headers - Optional headers to forward (e.g., Cookie header from incoming request)
+ * @param maxRetries - The maximum number of times to retry on internal server errors. Defaults to 2.
+ * @returns An object containing the success status, user info, and an error flag.
+ */
+export async function getUserAuthInfo(
+  headers?: Record<string, string>,
+  maxRetries: number = 2
+): Promise<AuthCheckResponse> {
+  let attempt = 0
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+  const endpoint = `${process.env.BASE_URL ?? ''}/api/auth/check`
+
+  while (attempt <= maxRetries) {
+    try {
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        cache: 'no-store',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        credentials: 'include',
+      })
+
+      if (response.ok) {
+        const { email } = (await response.json()) as { email?: string }
+        return { isInternalError: false, success: !!email, email: email ?? '' }
+      }
+
+      if (response.status >= 400 && response.status < 500) {
+        return { success: false, isInternalError: false, email: '' }
+      }
+
+      if (response.status >= 500) {
+        attempt++
+        if (attempt <= maxRetries) {
+          console.warn(`Auth check failed (server error), retrying... Attempt ${attempt} of ${maxRetries}`)
+          await delay(1000 * attempt)
+          continue
+        } else {
+          return { success: false, isInternalError: true, email: '' }
+        }
+      }
+    } catch (error) {
+      // Network error - transient
+      attempt++
+      const msg = `Auth check failed (network error), retrying... Attempt ${attempt} of ${maxRetries}`
+      console.error(msg, error)
+      if (attempt <= maxRetries) {
+        await delay(1000 * attempt)
+        continue
+      } else {
+        return { success: false, isInternalError: true, email: '' }
+      }
+    }
+  }
+
+  return { success: false, isInternalError: true, email: '' }
+}
+
+/**
+ * Reads all incoming client headers from the Next.js request and converts
+ * them into a simple Record<string, string> object for forwarding to an
+ * internal fetch call.
+ * Note: Headers will be lowercased due to standard Web Headers API behavior.
+ * @returns A Record<string, string> object containing all client headers.
+ */
+export async function getForwardableHeaders(): Promise<Record<string, string>> {
+  const requestHeaders = await headers()
+  const forwardedHeaders: Record<string, string> = {}
+
+  requestHeaders.forEach((value, key) => {
+    forwardedHeaders[key.toLowerCase()] = value
+  })
+
+  return forwardedHeaders
+}
 
 export function getOAuthRequestErrMsg(lang: string, code: string, desc: string): string {
   const tr = (id: string): string => {
