@@ -31,10 +31,6 @@ function AppSidebar({ tr, email }: Props) {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
-  useEffect(() => {
-    if (email) updateClientInfo({ email })
-  }, [email, updateClientInfo])
-
   const handleLogout = async () => {
     setIsLoggingOut(true)
     try {
@@ -62,13 +58,16 @@ function AppSidebar({ tr, email }: Props) {
 
   const isActive = (href: string) => pathname === href
 
+  useEffect(() => {
+    if (email) updateClientInfo({ email })
+  }, [email, updateClientInfo])
+
   return (
     <>
       <div
         style={{ backgroundColor: 'var(--primary-color)' }}
-        className={`h-full max-h-screen transition-all duration-300 ${
-          isExpanded ? 'w-64' : 'w-20'
-        } flex flex-col`}>
+        className={`h-full max-h-screen transition-all duration-300 ${isExpanded ? 'w-64' : 'w-20'
+          } flex flex-col`}>
         <div className='flex items-center justify-between px-4 py-3 border-b border-white/20'>
           {isExpanded && <span className='font-bold text-lg text-white'>Chaty</span>}
           <button
@@ -87,13 +86,10 @@ function AppSidebar({ tr, email }: Props) {
               <Tooltip key={item.href} label={item.label} disabled={isExpanded} position='right'>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 transition-colors font-medium ${
-                    active
-                      ? 'bg-white text-gray-900'
-                      : 'text-white hover:bg-white hover:text-gray-900'
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-3 transition-colors font-medium ${active ? 'bg-white text-gray-900' : 'text-white hover:bg-white hover:text-gray-900'
+                    }`}
                   style={{ width: '100%' }}>
-                  <Icon size={20} className='flex-shrink-0' />
+                  <Icon size={20} className='shrink-0' />
                   {isExpanded && <span>{item.label}</span>}
                 </Link>
               </Tooltip>
@@ -101,18 +97,16 @@ function AppSidebar({ tr, email }: Props) {
           })}
         </nav>
 
-        {/* Settings and Logout */}
         <div className='space-y-0 p-0 border-t border-white/20'>
           <Tooltip label={tr.settings} disabled={isExpanded} position='right'>
             <Link
               href='/settings'
-              className={`flex items-center gap-3 px-4 py-3 transition-colors font-medium ${
-                isActive('/settings')
+              className={`flex items-center gap-3 px-4 py-3 transition-colors font-medium ${isActive('/settings')
                   ? 'bg-white text-gray-900'
                   : 'text-white hover:bg-white hover:text-gray-900'
-              }`}
+                }`}
               style={{ width: '100%', display: 'flex' }}>
-              <IconSettings size={20} className='flex-shrink-0' />
+              <IconSettings size={20} className='shrink-0' />
               {isExpanded && <span>{tr.settings}</span>}
             </Link>
           </Tooltip>
@@ -122,14 +116,13 @@ function AppSidebar({ tr, email }: Props) {
               onClick={() => setIsLogoutModalOpen(true)}
               className='w-full flex items-center gap-3 px-4 py-3 transition-colors text-white font-medium hover:bg-white hover:text-gray-900'
               style={{ display: 'flex' }}>
-              <IconLogout size={20} className='flex-shrink-0' />
+              <IconLogout size={20} className='shrink-0' />
               {isExpanded && <span>{tr.logout}</span>}
             </button>
           </Tooltip>
         </div>
       </div>
 
-      {/* Logout Confirmation Modal */}
       <Modal
         opened={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
