@@ -368,6 +368,18 @@
     "tr": "Manage your group conversations"
   },
   {
+    "id": "app.groups.search",
+    "tr": "Search messsages..."
+  },
+  {
+    "id": "app.groups.my_groups",
+    "tr": "My Groups"
+  },
+  {
+    "id": "app.groups.create",
+    "tr": "Create Group"
+  },
+  {
     "id": "app.saved.title",
     "tr": "Saved Messages"
   },

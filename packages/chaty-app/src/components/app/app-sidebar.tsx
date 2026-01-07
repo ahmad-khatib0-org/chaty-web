@@ -27,7 +27,7 @@ function AppSidebar({ tr, email }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const updateClientInfo = useAppStore((state) => state.updateClientInfo)
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 

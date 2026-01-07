@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation'
 
 const ServerError = dynamic(() => import('@/components/app/server-error'))
 import AppSidebar from '@/components/app/app-sidebar'
-import AppHeader from '@/components/app/header/app-header'
 import { getClientInformation, getForwardableHeaders, getUserAuthInfo } from '@/lib/server'
 
 function getTranslations(lang: string) {
@@ -36,9 +35,6 @@ export default async function Layout({ children }: Readonly<{ children: React.Re
     <div className='grid grid-cols-[auto_1fr] min-h-screen max-h-screen'>
       <AppSidebar email={email} tr={tr} />
       <div className='grid grid-rows-[auto,1fr] max-h-screen overflow-hidden'>
-        <div className='sticky top-0 z-10 h-14'>
-          <AppHeader info={ci} />
-        </div>
         <div className='overflow-y-auto' style={{ maxHeight: 'calc(100vh - 56px)' }}>
           {children}
         </div>

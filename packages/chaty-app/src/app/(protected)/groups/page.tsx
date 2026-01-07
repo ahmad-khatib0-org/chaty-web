@@ -1,4 +1,6 @@
 import { Metadata } from 'next'
+
+import GroupsWrapper from '@/components/groups/groups-wrapper'
 import { Trans } from '@/lib/server'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,14 +13,26 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+function getTranslations(lang: string) {
+  const tr = Trans.tr
+  return {
+    myGroups: tr(lang, 'app.groups.my_groups'),
+    searchMessages: tr(lang, 'app.groups.search'),
+    create: tr(lang, 'app.groups.create'),
+  }
+}
+
 type Props = {}
 
-function Page({}: Props) {
+async function Page({ }: Props) {
+  const lang = await Trans.getUserLang()
+  const tr = getTranslations(lang)
+
   return (
     <main>
-      <div className='p-6'>
-        <h1 className='text-3xl font-bold'>Groups</h1>
-      </div>
+      <section>
+        <GroupsWrapper tr={tr} />
+      </section>
     </main>
   )
 }
