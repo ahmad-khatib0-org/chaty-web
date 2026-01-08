@@ -380,6 +380,62 @@
     "tr": "Create Group"
   },
   {
+    "id": "app.groups.create_group",
+    "tr": "Create New Group"
+  },
+  {
+    "id": "app.groups.group_name",
+    "tr": "Group Name"
+  },
+  {
+    "id": "app.groups.group_name_placeholder",
+    "tr": "Enter group name"
+  },
+  {
+    "id": "app.groups.group_name_required",
+    "tr": "Group name is required"
+  },
+  {
+    "id": "app.groups.group_name_length",
+    "tr": "Group name must be between {{Min}} and {{Max}} characters"
+  },
+  {
+    "id": "app.groups.group_description",
+    "tr": "Description"
+  },
+  {
+    "id": "app.groups.group_description_placeholder",
+    "tr": "Enter group description (optional)"
+  },
+  {
+    "id": "app.groups.group_description_length",
+    "tr": "Description must be {{Max}} characters or less"
+  },
+  {
+    "id": "app.groups.recipients",
+    "tr": "Members"
+  },
+  {
+    "id": "app.groups.recipients_placeholder",
+    "tr": "Enter member usernames or emails"
+  },
+  {
+    "id": "app.groups.recipients_required",
+    "tr": "At least one member is required"
+  },
+  {
+    "id": "app.groups.nsfw",
+    "tr": "Mark as NSFW (Not Safe For Work)"
+  },
+  {
+    "id": "app.groups.error_creating_group",
+    "tr": "Failed to create group"
+  },
+  {
+    "id": "app.groups.cancel",
+    "tr": "Cancel"
+  },
+  {
     "id": "app.saved.title",
     "tr": "Saved Messages"
   },
