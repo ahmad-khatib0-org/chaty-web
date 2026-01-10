@@ -1,11 +1,12 @@
 'use client'
 import { useState } from 'react'
-import { Modal, TextInput, LoadingOverlay, TagsInput, Checkbox, Button, Tooltip } from '@mantine/core'
+import { Modal, TextInput, LoadingOverlay, Checkbox, Button, Tooltip } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { useForm } from '@mantine/form'
 import { yupResolver } from 'mantine-form-yup-resolver'
 import { notifications } from '@mantine/notifications'
 
+import UsernamesSearch from '@/components/common/usernames-search'
 import { AppError } from '@chaty-app/proto/web/shared/v1/error_pb'
 import { ObjString } from '@/types/shared'
 import { grpcClient, handleGrpcErr, GroupsCreateHelpers } from '@/lib/client'
@@ -76,11 +77,13 @@ function GroupsCreate({ tr }: Props) {
             placeholder={tr.groupDescriptionPlaceholder}
             {...form.getInputProps('description')}
           />
-          <TagsInput
+          <UsernamesSearch
             label={tr.recipients}
             placeholder={tr.recipientsPlaceholder}
-            withAsterisk
-            {...form.getInputProps('recipients')}
+            nothingFoundMessage={tr.usernamesSearchNotFound}
+            value={form.values.recipients}
+            onChange={(value) => form.setFieldValue('recipients', value as any)}
+            errorMsg={form.errors.recipients ? String(form.errors.recipients) : undefined}
           />
 
           <Checkbox label={tr.nsfw} {...form.getInputProps('nsfw', { type: 'checkbox' })} />

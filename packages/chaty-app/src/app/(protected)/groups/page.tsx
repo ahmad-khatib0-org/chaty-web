@@ -36,6 +36,7 @@ function getTranslations(lang: string) {
     recipients: tr(lang, 'app.groups.recipients'),
     recipientsPlaceholder: tr(lang, 'app.groups.recipients_placeholder'),
     recipientsRequired: tr(lang, 'app.groups.recipients_required'),
+    usernamesSearchNotFound: tr(lang, 'app.groups.usernames_search_not_found'),
     nsfw: tr(lang, 'app.groups.nsfw'),
     errorCreatingGroup: tr(lang, 'app.groups.error_creating_group'),
     cancel: tr(lang, 'app.groups.cancel'),

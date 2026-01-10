@@ -424,6 +424,10 @@
     "tr": "At least one member is required"
   },
   {
+    "id": "app.groups.usernames_search_not_found",
+    "tr": "No users found"
+  },
+  {
     "id": "app.groups.nsfw",
     "tr": "Mark as NSFW (Not Safe For Work)"
   },

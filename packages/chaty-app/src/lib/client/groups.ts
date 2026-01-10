@@ -14,7 +14,7 @@ export class GroupsCreateHelpers {
         .max(GROUPS_NAME_MAX_LENGTH, tr.groupNameLength)
         .required(tr.groupNameRequired),
       description: string().max(GROUPS_DESCRIPTION_MAX_LENGTH, tr.groupDescriptionLength).notRequired(),
-      recipients: array(string()).min(1, tr.recipientsRequired).required(tr.recipientsRequired),
+      recipients: array(string()).notRequired(),
       nsfw: boolean(),
     })
   }

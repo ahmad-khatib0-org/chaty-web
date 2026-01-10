@@ -47,6 +47,12 @@ export function grpcClient() {
     baseUrl,
     interceptors: [metadataInterceptor],
     useBinaryFormat: true,
+    fetch: ((input, init) => {
+      return fetch(input, {
+        ...init,
+        credentials: 'include',
+      })
+    }) as typeof fetch,
   })
 
   _grpcClient = createClient(ChatyService, transport)
