@@ -40,6 +40,11 @@ function getTranslations(lang: string) {
     nsfw: tr(lang, 'app.groups.nsfw'),
     errorCreatingGroup: tr(lang, 'app.groups.error_creating_group'),
     cancel: tr(lang, 'app.groups.cancel'),
+    noGroups: tr(lang, 'app.groups.no_groups'),
+    tryAgain: tr(lang, 'app.groups.try_again'),
+    noMore: tr(lang, 'app.groups.no_more'),
+    member: tr(lang, 'app.groups.member'),
+    members: tr(lang, 'app.groups.members'),
   }
 }
 

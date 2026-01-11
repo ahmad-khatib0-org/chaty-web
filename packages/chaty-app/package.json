@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@chaty-app/proto": "^0.1.36",
+    "@chaty-app/proto": "^0.1.39",
     "@connectrpc/connect": "^2.1.1",
     "@connectrpc/connect-web": "^2.1.1",
     "@fingerprintjs/fingerprintjs": "^5.0.1",
@@ -27,6 +27,7 @@
     "opossum": "^9.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-intersection-observer": "^10.0.0",
     "server-only": "^0.0.1",
     "ua-parser-js": "^2.0.7",
     "ulid": "^3.0.2",

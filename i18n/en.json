@@ -455,4 +455,26 @@
     "id": "app.settings.description",
     "tr": "Manage your account and preferences"
   }
+,
+  {
+    "id": "app.groups.no_groups",
+    "tr": "No groups yet. Create one to get started!"
+  },
+  {
+    "id": "app.groups.try_again",
+    "tr": "Try Again"
+  },
+  {
+    "id": "app.groups.no_more",
+    "tr": "No more groups"
+  }
+,
+  {
+    "id": "app.groups.member",
+    "tr": "member"
+  },
+  {
+    "id": "app.groups.members",
+    "tr": "members"
+  }
 ]
