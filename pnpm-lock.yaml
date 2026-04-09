@@ -9,8 +9,8 @@ importers:
   packages/chaty-app:
     dependencies:
       '@chaty-app/proto':
-        specifier: ^0.1.39
-        version: 0.1.39
+        specifier: ^0.1.73
+        version: 0.1.73
       '@connectrpc/connect':
         specifier: ^2.1.1
         version: 2.1.1(@bufbuild/protobuf@2.10.2)
@@ -35,6 +35,9 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.36.0
         version: 3.36.0(react@19.2.3)
+      chaty-client:
+        specifier: workspace:*
+        version: link:../chaty-client
       client-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -114,6 +117,24 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+
+  packages/chaty-client:
+    dependencies:
+      '@chaty-app/proto':
+        specifier: ^0.1.73
+        version: 0.1.73
+      '@vladfrangu/async_event_emitter':
+        specifier: ^2.4.7
+        version: 2.4.7
+      json-with-bigint:
+        specifier: ^3.5.7
+        version: 3.5.7
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
+      zustand:
+        specifier: ^5.0.9
+        version: 5.0.9(@types/react@19.2.7)(react@19.2.3)
 
 packages:
 
@@ -195,8 +216,8 @@ packages:
   '@bufbuild/protobuf@2.10.2':
     resolution: {integrity: sha512-uFsRXwIGyu+r6AMdz+XijIIZJYpoWeYzILt5yZ2d3mCjQrWUTVpVD9WL/jZAbvp+Ed04rOhrsk7FiTcEDseB5A==}
 
-  '@chaty-app/proto@0.1.39':
-    resolution: {integrity: sha512-FjKPxPGuH1VH4KhFQKn+l2QDSy6r5TwIMkzK6l3zXqZ+s9ue3ehdb5/mtisfBranR0mumkovyGMFvnqODaNWYg==}
+  '@chaty-app/proto@0.1.73':
+    resolution: {integrity: sha512-I6gjB07rz1h1m4ojW86xltrPQpdDkpp2Zh7tI5YDciAUgoglkdjDEVmTr9w7/EPytINTcJMo/MXuLTmM6ov87A==}
 
   '@connectrpc/connect-web@2.1.1':
     resolution: {integrity: sha512-J8317Q2MaFRCT1jzVR1o06bZhDIBmU0UAzWx6xOIXzOq8+k71/+k7MUF7AwcBUX+34WIvbm5syRgC5HXQA8fOg==}
@@ -872,6 +893,10 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
+
+  '@vladfrangu/async_event_emitter@2.4.7':
+    resolution: {integrity: sha512-Xfe6rpCTxSxfbswi/W/Pz7zp1WWSNn4A0eW4mLkQUewCrXXtMj31lCg+iQyTkh/CkusZSq9eDflu7tjEDXUY6g==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1594,6 +1619,9 @@ packages:
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
+  json-with-bigint@3.5.7:
+    resolution: {integrity: sha512-7ei3MdAI5+fJPVnKlW77TKNKwQ5ppSzWvhPuSuINT/GYW9ZOC1eRKOuhV9yHG5aEsUPj9BBx5JIekkmoLHxZOw==}
+
   json5@1.0.2:
     resolution: {integrity: sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==}
     hasBin: true
@@ -2042,6 +2070,9 @@ packages:
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
+
+  rxjs@7.8.2:
+    resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
 
   safe-array-concat@1.1.3:
     resolution: {integrity: sha512-AURm5f0jYEOydBj7VQlVvDrjeFgthDdEF5H1dP+6mNpoXOMo1quQqJ4wvJDyRZ9+pO3kGWoOdmV08cSv2aJV6Q==}
@@ -2529,7 +2560,7 @@ snapshots:
 
   '@bufbuild/protobuf@2.10.2': {}
 
-  '@chaty-app/proto@0.1.39':
+  '@chaty-app/proto@0.1.73':
     dependencies:
       '@bufbuild/protobuf': 2.10.2
       '@connectrpc/connect': 2.1.1(@bufbuild/protobuf@2.10.2)
@@ -3140,6 +3171,8 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
+
+  '@vladfrangu/async_event_emitter@2.4.7': {}
 
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:
@@ -4022,6 +4055,8 @@ snapshots:
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
+  json-with-bigint@3.5.7: {}
+
   json5@1.0.2:
     dependencies:
       minimist: 1.2.8
@@ -4452,6 +4487,10 @@ snapshots:
   run-parallel@1.2.0:
     dependencies:
       queue-microtask: 1.2.3
+
+  rxjs@7.8.2:
+    dependencies:
+      tslib: 2.8.1
 
   safe-array-concat@1.1.3:
     dependencies:

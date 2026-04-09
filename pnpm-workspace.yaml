@@ -1,3 +1,8 @@
----
 packages:
   - packages/chaty-app
+  - packages/chaty-client
+
+onlyBuiltDependencies:
+  - protobufjs
+  - sharp
+  - unrs-resolver
