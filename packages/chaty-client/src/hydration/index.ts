@@ -109,6 +109,13 @@ export type Hydrators = typeof hydrators
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ExtractInput<T> = T extends Hydrate<infer I, any> ? I : never
 
+// example: Specific hydration
+// type BotHydration = Hydrate<Bot, HydratedBot>
+//
+// ExtractOutput<BotHydration>
+//   → Captures "HydratedBot" and returns it
+//   → Result: HydratedBot
+//
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ExtractOutput<T> = T extends Hydrate<any, infer O> ? O : never
 

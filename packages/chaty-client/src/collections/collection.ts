@@ -4,9 +4,9 @@ import { ObjectStorage } from './object-storage'
 import type { Hydrators } from '../hydration'
 
 /**
- * Abstract Operations type
+ * Abstract Collections type
  */
-export abstract class Operation<T> {
+export abstract class Collection<T> {
   /**
    * Get an existing object
    * @param id Id
@@ -108,7 +108,7 @@ export abstract class Operation<T> {
 /**
  * Collection backed by RxJS BehaviorSubject
  */
-export abstract class StoreOperation<T, V> extends Operation<T> {
+export abstract class StoreCollection<T, V> extends Collection<T> {
   #storage = new ObjectStorage<V>()
   #objects = new Map<string, BehaviorSubject<T | undefined>>()
   #objectsSubject = new BehaviorSubject<Map<string, BehaviorSubject<T | undefined>>>(new Map())
