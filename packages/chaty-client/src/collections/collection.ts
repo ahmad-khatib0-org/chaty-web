@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable } from 'rxjs'
+import { BehaviorSubject, map, Observable } from 'rxjs'
 
 import { ObjectStorage } from './object-storage'
 import type { Hydrators } from '../hydration'
@@ -110,8 +110,9 @@ export abstract class Collection<T> {
  */
 export abstract class StoreCollection<T, V> extends Collection<T> {
   #storage = new ObjectStorage<V>()
-  #objects = new Map<string, BehaviorSubject<T | undefined>>()
-  #objectsSubject = new BehaviorSubject<Map<string, BehaviorSubject<T | undefined>>>(new Map())
+  #objects = new Map<string, T>()
+  #subjects = new Map<string, BehaviorSubject<T | undefined>>(new Map())
+  #collectionSubject = new BehaviorSubject<Map<string, T>>(new Map())
 
   readonly getUnderlyingObject: (id: string) => V
   readonly updateUnderlyingObject: (key: string, value: V | undefined) => void
@@ -128,11 +129,10 @@ export abstract class StoreCollection<T, V> extends Collection<T> {
    * @returns Observable that emits when object changes
    */
   get$(id: string): Observable<T | undefined> {
-    let subject = this.#objects.get(id)
+    let subject = this.#subjects.get(id)
     if (!subject) {
       subject = new BehaviorSubject<T | undefined>(undefined)
-      this.#objects.set(id, subject)
-      this.#objectsSubject.next(this.#objects)
+      this.#subjects.set(id, subject)
     }
     return subject.asObservable()
   }
@@ -143,7 +143,31 @@ export abstract class StoreCollection<T, V> extends Collection<T> {
    * @returns Object or undefined
    */
   get(id: string): T | undefined {
-    return this.#objects.get(id)?.value
+    return this.#objects.get(id)
+  }
+
+  /**
+   * Get observable of all objects
+   * @returns Observable that emits the entire map when any change occurs
+   */
+  getAll$(): Observable<Map<string, T>> {
+    return this.#collectionSubject.asObservable()
+  }
+
+  /**
+   * Get observable of all values as an array
+   * @returns Observable that emits array of all objects when changes occur
+   */
+  getValues$(): Observable<T[]> {
+    return this.#collectionSubject.asObservable().pipe(map((m) => Array.from(m.values())))
+  }
+
+  /**
+   * Get observable of collection size
+   * @returns Observable that emits size when changes occur
+   */
+  getSize$(): Observable<number> {
+    return this.#collectionSubject.asObservable().pipe(map((map) => map.size))
   }
 
   /**
@@ -160,13 +184,15 @@ export abstract class StoreCollection<T, V> extends Collection<T> {
    * @param id Id
    */
   delete(id: string): void {
-    const subject = this.#objects.get(id)
+    const subject = this.#subjects.get(id)
     if (subject) {
       subject.complete()
-      this.#objects.delete(id)
-      this.updateUnderlyingObject(id, undefined)
-      this.#objectsSubject.next(this.#objects)
+      this.#subjects.delete(id)
     }
+
+    this.#objects.delete(id)
+    this.updateUnderlyingObject(id, undefined as never)
+    this.#collectionSubject.next(new Map(this.#objects))
   }
 
   /**
@@ -179,5 +205,92 @@ export abstract class StoreCollection<T, V> extends Collection<T> {
    */
   create(id: string, type: keyof Hydrators, instance: T, context: unknown, data?: unknown): void {
     this.#storage.hydrate(id, type, context, data)
+    this.#objects.set(id, instance)
+
+    // Update the individual subject
+    let subject = this.#subjects.get(id)
+    if (!subject) {
+      subject = new BehaviorSubject<T | undefined>(instance)
+      this.#subjects.set(id, subject)
+    } else {
+      subject.next(instance)
+    }
+
+    // Update the collection subject
+    this.#collectionSubject.next(new Map(this.#objects))
+  }
+
+  /**
+   * Update an existing object
+   * @param id Id
+   * @param newValue New value
+   */
+  update(id: string, newValue: T): void {
+    if (this.#objects.has(id)) {
+      this.#objects.set(id, newValue)
+      const subject = this.#subjects.get(id)
+      if (subject) subject.next(newValue)
+      this.#collectionSubject.next(new Map(this.#objects))
+    }
+  }
+
+  /**
+   * Check whether an object is partially defined
+   * @param id Id
+   * @returns Whether it is a partial
+   */
+  isPartial(id: string): boolean {
+    return !!(this.getUnderlyingObject(id) as { partial: boolean }).partial
+  }
+
+  /**
+   * Number of stored objects (synchronous)
+   * @returns Size
+   */
+  size(): number {
+    return this.#objects.size
+  }
+
+  /**
+   * Iterable of keys in the map
+   * @returns Iterable
+   */
+  keys(): IterableIterator<string> {
+    return this.#objects.keys()
+  }
+
+  /**
+   * Iterable of values in the map
+   * @returns Iterable
+   */
+  values(): IterableIterator<T> {
+    return this.#objects.values()
+  }
+
+  /**
+   * Iterable of key, value pairs in the map
+   * @returns Iterable
+   */
+  entries(): IterableIterator<[string, T]> {
+    return this.#objects.entries()
+  }
+
+  /**
+   * Execute a provided function over each key, value pair in the map
+   * @param cb Callback for each pair
+   */
+  forEach(cb: (value: T, key: string, map: Map<string, T>) => void): void {
+    return this.#objects.forEach(cb)
+  }
+
+  /**
+   * Clean up all subscriptions
+   */
+  destroy(): void {
+    for (const subject of this.#subjects.values()) {
+      subject.complete()
+    }
+    this.#subjects.clear()
+    this.#collectionSubject.complete()
   }
 }
