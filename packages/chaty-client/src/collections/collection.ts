@@ -2,6 +2,7 @@ import { BehaviorSubject, map, Observable } from 'rxjs'
 
 import { ObjectStorage } from './object-storage'
 import type { Hydrators } from '../hydration'
+import type { Client } from '../client'
 
 /**
  * Abstract Collections type
@@ -292,5 +293,21 @@ export abstract class StoreCollection<T, V> extends Collection<T> {
     }
     this.#subjects.clear()
     this.#collectionSubject.complete()
+  }
+}
+
+/**
+ * Generic class collection backed by store
+ */
+export class ClassCollection<T, V> extends StoreCollection<T, V> {
+  readonly client: Client
+
+  /**
+   * Create generic class collection
+   * @param client Client
+   */
+  constructor(client: Client) {
+    super()
+    this.client = client
   }
 }

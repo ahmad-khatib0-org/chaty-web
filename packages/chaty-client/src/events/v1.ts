@@ -1,9 +1,9 @@
-import type { ChannelUnread } from '@chaty-app/proto/node/service/v1/channels'
-import type { Channel } from '@chaty-app/proto/node/service/v1/channels_db'
-import type { Message } from '@chaty-app/proto/node/service/v1/messages_db'
-import type { ServerMember } from '@chaty-app/proto/node/service/v1/server_members_db'
-import type { Server } from '@chaty-app/proto/node/service/v1/servers_db'
-import type { User } from '@chaty-app/proto/node/service/v1/users_db'
+import type { ChannelUnread } from '@chaty-app/proto/web-plain/service/v1/channels'
+import type { Channel } from '@chaty-app/proto/web-plain/service/v1/channels_db'
+import type { Message } from '@chaty-app/proto/web-plain/service/v1/messages_db'
+import type { ServerMember } from '@chaty-app/proto/web-plain/service/v1/server_members_db'
+import type { Server } from '@chaty-app/proto/web-plain/service/v1/servers_db'
+import type { User } from '@chaty-app/proto/web-plain/service/v1/users_db'
 
 /**
  * Version 1 of the events protocol
@@ -104,3 +104,11 @@ export type UserVoiceState = {
   screensharing: boolean
   camera: boolean
 }
+
+/**
+ * Handle an event for the Client
+ * @param client Client
+ * @param event Event
+ * @param setReady Signal state change
+ */
+export async function handleEvent(event: ServerMessage) { }
