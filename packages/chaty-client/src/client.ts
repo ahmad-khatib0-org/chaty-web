@@ -7,6 +7,8 @@ import type { ChatyConfig } from '@chaty-app/proto/web-plain/service/v1/config'
 import { ConnectionState, EventClient, type EventClientOptions } from './events/event_client'
 import { handleEvent, type ProtocolV1 } from './events/v1'
 import { ServerCollection } from './collections'
+import { Message } from './models'
+import type { HydratedMessage } from './hydration'
 
 export type Session = { id: string; token: string; user_id: string } | string
 
@@ -19,6 +21,9 @@ export type Events = {
   logout: []
 
   policyChanges: [policyChanges: ProtocolV1['types']['policyChange'][], acknowledge: () => Promise<void>]
+
+  messageCreate: [message: Message]
+  messageDelete: [message: HydratedMessage]
 }
 
 /**
@@ -249,4 +254,12 @@ export class Client {
     clearTimeout(this.#reconnectTimeout)
     this.events.disconnect()
   }
+
+  /**
+   * Use an existing session
+   */
+  useExistingSession(session: Session): void {
+    this.#session = session;
+  }
+
 }
