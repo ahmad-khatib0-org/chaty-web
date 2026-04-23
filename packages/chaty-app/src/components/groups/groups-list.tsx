@@ -89,12 +89,13 @@ function GroupsList({ tr }: Props) {
 
       <div className='h-full border-r border-black/15'>
         {groups.length === 0 && !loading && !error && initialLoadAttempted && (
-          <div className='flex-1 flex flex-col items-center justify-center px-4 py-8'>
-            <div className='relative w-48 h-48 mb-6'>
+          <div className='flex-1 h-full my-auto flex flex-col items-center justify-center px-4 py-8'>
+            <div className='relative w-49 h-48 mb-6'>
               <Image
                 src='/groups-illustration.webp'
                 alt='no groups'
                 sizes='100%'
+                fill
                 className='w-full h-full object-cover'
               />
             </div>

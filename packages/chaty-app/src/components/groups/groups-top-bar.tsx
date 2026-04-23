@@ -6,11 +6,11 @@ type Props = {
 }
 
 function GroupsTopBar({ }: Props) {
-  const msg = useGroupsStore((state) => state.msg)
+  const group = useGroupsStore((state) => state.currentGroup)
 
-  if (!msg) return <div className='h-12' style={{ backgroundColor: 'var(--primary-color)' }}></div>
+  if (!group) return <div className='h-12' style={{ backgroundColor: 'var(--primary-color)' }}></div>
 
-  return <div className='h-12'></div>
+  return <div className='h-12' style={{ backgroundColor: 'var(--primary-color)' }}></div>
 }
 
 export default GroupsTopBar
