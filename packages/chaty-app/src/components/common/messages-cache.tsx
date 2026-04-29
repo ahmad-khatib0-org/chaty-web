@@ -1,8 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect } from 'react'
 import { Client } from 'chaty-client'
 
-import { Channel } from '@chaty-app/proto/web-plain/service/v1/channels_db'
-import { Message } from 'chaty-client/models'
+import { Message, Channel } from 'chaty-client/models'
 import { useLifecycle, State } from '@/context/client'
 
 type ChannelState = {

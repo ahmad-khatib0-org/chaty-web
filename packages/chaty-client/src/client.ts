@@ -1,12 +1,12 @@
 import { BehaviorSubject, Observable, share, Subject, Subscription } from 'rxjs'
 
 import type { Channel } from '@chaty-app/proto/web-plain/service/v1/channels_db'
-import type { User } from '@chaty-app/proto/web-plain/service/v1/users_db'
+import type { APIUser } from '@chaty-app/proto/web-plain/service/v1/users'
 import type { ChatyConfig } from '@chaty-app/proto/web-plain/service/v1/config'
 
 import { ConnectionState, EventClient, type EventClientOptions } from './events/event_client'
 import { handleEvent, type ProtocolV1 } from './events/v1'
-import { ServerCollection } from './collections'
+import { ServerCollection, UserCollection } from './collections'
 import { Message } from './models'
 import type { HydratedMessage } from './hydration'
 
@@ -84,6 +84,7 @@ export type ClientOptions = Partial<EventClientOptions> & {
 export class Client {
   // readonly bots
   readonly servers
+  readonly users
 
   readonly options: ClientOptions
   readonly events: EventClient<1>
@@ -91,7 +92,7 @@ export class Client {
   configuration: ChatyConfig | undefined
   #session: Session | undefined
 
-  #userSubject = new BehaviorSubject<User | undefined>(undefined)
+  #userSubject = new BehaviorSubject<APIUser | undefined>(undefined)
 
   #readySubject = new BehaviorSubject<boolean>(false)
   #connectionFailureCountSubject = new BehaviorSubject<number>(0)
@@ -101,12 +102,12 @@ export class Client {
   #reconnectTimeout: number | undefined
   #subscriptions = new Subscription()
 
-  readonly user$: Observable<User | undefined>
+  readonly user$: Observable<APIUser | undefined>
   readonly ready$: Observable<boolean>
   readonly connectionFailureCount$: Observable<number>
 
   // Public accessors for synchronous access
-  get user(): User | undefined {
+  get user(): APIUser | undefined {
     return this.#userSubject.value
   }
 
@@ -157,6 +158,7 @@ export class Client {
     this.connectionFailureCount$ = this.#connectionFailureCountSubject.asObservable()
 
     this.servers = new ServerCollection(this)
+    this.users = new UserCollection(this)
 
     this.#subscriptions.add(this.events.on.error.subscribe((err) => this.emit('error', err)))
     this.#subscriptions.add(
@@ -259,7 +261,6 @@ export class Client {
    * Use an existing session
    */
   useExistingSession(session: Session): void {
-    this.#session = session;
+    this.#session = session
   }
-
 }

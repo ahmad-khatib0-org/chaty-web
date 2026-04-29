@@ -1,7 +1,12 @@
-import { MessageWebhook as MessageWebhookAPI } from '@chaty-app/proto/web-plain/service/v1/messages_db'
+import {
+  Masquerade,
+  MessageWebhook as MessageWebhookAPI,
+} from '@chaty-app/proto/web-plain/service/v1/messages_db'
 
 import type { MessageCollection } from '../collections'
 import type { HydratedMessage } from '../hydration'
+import type { MessageSystem } from './message-system'
+import type { User } from './user'
 
 export class Message {
   readonly #collection: MessageCollection
@@ -12,12 +17,42 @@ export class Message {
     this.id = id
   }
 
-  get channel(): HydratedMessage {
+  get message(): HydratedMessage {
     return this.#collection.getUnderlyingObject(this.id)
   }
 
   get channelId(): string {
-    return this.channel.channelId
+    return this.message.channelId
+  }
+
+  get createdAt(): number {
+    return Number(this.message.createdAt)
+  }
+
+  get authorId() {
+    return this.message.authorId
+  }
+
+  get masquerade(): Masquerade | undefined {
+    return this.message.masquerade
+  }
+
+  get system(): MessageSystem | undefined {
+    return this.message.system
+  }
+
+  /**
+   * IDs of messages this message replies to
+   */
+  get replyIds(): string[] {
+    return this.message.replies
+  }
+
+  /**
+   * User this message was sent by
+   */
+  get author(): User | undefined {
+    return this.#collection.client.users.get(this.message.authorId!)
   }
 }
 

@@ -2,6 +2,8 @@ import { botHydration } from './bot'
 
 export * from './server'
 export * from './message'
+export * from './channel'
+export * from './user'
 
 /**
  * Functions to map from one object to another

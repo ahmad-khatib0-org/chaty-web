@@ -9,8 +9,8 @@ importers:
   packages/chaty-app:
     dependencies:
       '@chaty-app/proto':
-        specifier: ^0.1.73
-        version: 0.1.73
+        specifier: ^0.1.76
+        version: 0.1.76
       '@connectrpc/connect':
         specifier: ^2.1.1
         version: 2.1.1(@bufbuild/protobuf@2.10.2)
@@ -44,6 +44,9 @@ importers:
       cookies-next:
         specifier: ^6.1.1
         version: 6.1.1(next@16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+      fast-deep-equal:
+        specifier: ^3.1.3
+        version: 3.1.3
       jwt-decode:
         specifier: ^4.0.0
         version: 4.0.0
@@ -127,8 +130,8 @@ importers:
   packages/chaty-client:
     dependencies:
       '@chaty-app/proto':
-        specifier: ^0.1.73
-        version: 0.1.73
+        specifier: ^0.1.76
+        version: 0.1.76
       '@vladfrangu/async_event_emitter':
         specifier: ^2.4.7
         version: 2.4.7
@@ -222,8 +225,8 @@ packages:
   '@bufbuild/protobuf@2.10.2':
     resolution: {integrity: sha512-uFsRXwIGyu+r6AMdz+XijIIZJYpoWeYzILt5yZ2d3mCjQrWUTVpVD9WL/jZAbvp+Ed04rOhrsk7FiTcEDseB5A==}
 
-  '@chaty-app/proto@0.1.73':
-    resolution: {integrity: sha512-I6gjB07rz1h1m4ojW86xltrPQpdDkpp2Zh7tI5YDciAUgoglkdjDEVmTr9w7/EPytINTcJMo/MXuLTmM6ov87A==}
+  '@chaty-app/proto@0.1.76':
+    resolution: {integrity: sha512-chhPI01hRsyE6HN0Fmh5Uc9bFeooLitTq5tqQrAoQG6ix9NiKX2criVrhM0Ct6vaddo1vHY6lrm1PHcoEyph5g==}
 
   '@connectrpc/connect-web@2.1.1':
     resolution: {integrity: sha512-J8317Q2MaFRCT1jzVR1o06bZhDIBmU0UAzWx6xOIXzOq8+k71/+k7MUF7AwcBUX+34WIvbm5syRgC5HXQA8fOg==}
@@ -2575,7 +2578,7 @@ snapshots:
 
   '@bufbuild/protobuf@2.10.2': {}
 
-  '@chaty-app/proto@0.1.73':
+  '@chaty-app/proto@0.1.76':
     dependencies:
       '@bufbuild/protobuf': 2.10.2
       '@connectrpc/connect': 2.1.1(@bufbuild/protobuf@2.10.2)

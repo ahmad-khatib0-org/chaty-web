@@ -3,7 +3,7 @@ import type { Channel } from '@chaty-app/proto/web-plain/service/v1/channels_db'
 import type { Message } from '@chaty-app/proto/web-plain/service/v1/messages_db'
 import type { ServerMember } from '@chaty-app/proto/web-plain/service/v1/server_members_db'
 import type { Server } from '@chaty-app/proto/web-plain/service/v1/servers_db'
-import type { User } from '@chaty-app/proto/web-plain/service/v1/users_db'
+import type { APIUser } from '@chaty-app/proto/web-plain/service/v1/users'
 
 /**
  * Version 1 of the events protocol
@@ -74,7 +74,7 @@ export type PolicyChange = {
  * Initial synchronisation packet
  */
 type ReadyData = {
-  users: User[]
+  users: APIUser[]
   servers: Server[]
   channels: Channel[]
   members: ServerMember

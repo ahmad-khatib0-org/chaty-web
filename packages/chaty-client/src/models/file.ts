@@ -6,4 +6,17 @@ export class File {
   constructor(file: APIFile) {
     this.#file = file
   }
+
+  static getDefaultAPIFile(): APIFile {
+    return {
+      bucket: '',
+      contentType: '',
+      filename: '',
+      hash: '',
+      id: '',
+      size: '',
+      uploadedAt: '',
+      uploaderId: '',
+    }
+  }
 }
