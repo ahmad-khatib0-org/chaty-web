@@ -1,15 +1,42 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ReactNode, RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import deepEqual from 'fast-deep-equal'
 
-import { Channel, Message } from 'chaty-client/models'
+import { Channel, Message as MessageType } from 'chaty-client/models'
 
 import { useMessageCache } from './messages-cache'
 import { State, useClient, useLifecycle } from '@/context/client'
 import { useDraftsStore } from '@/state'
+import { ListView } from '@/components/app'
+import { ConversationStart } from './conversation-start'
+import { ObjString } from '@/types/shared'
+import { Message } from './message'
+import { JumpToBottom, MessageBlocked, MessageDivider } from '../messaging'
 
 const DEFAULT_FETCH_LIMIT = 50
 
+type ListEntry =
+  | // Message
+  {
+    t: 0
+    message: MessageType
+    tail: boolean
+    highlight: boolean
+  }
+  // Message Divider
+  | {
+    t: 1
+    date?: string
+    unread?: boolean
+  }
+  // Blocked messages
+  | {
+    t: 2
+    count: number
+  }
+
 type Props = {
+  tr: ObjString
+
   /**
    * Channel to fetch messages from
    */
@@ -64,6 +91,7 @@ type Props = {
 }
 
 function Messages({
+  tr,
   channel,
   fetchLimit,
   limit,
@@ -81,7 +109,7 @@ function Messages({
   const editingMessageId = useDraftsStore((state) => state.editingMessageId)
   const setEditingMessage = useDraftsStore((state) => state.setEditingMessage)
 
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<MessageType[]>([])
   const [atStart, setAtStart] = useState(false)
   const [atEnd, setAtEnd] = useState(false)
   /**
@@ -100,7 +128,7 @@ function Messages({
    * The new message handler should write into this if it
    * is defined as opposed to appending to messages[] list
    */
-  let collectedMessages: Message[] | undefined
+  let collectedMessages: MessageType[] | undefined
 
   /**
    * Pre-empt the current fetch (cancels any ongoing fetch)
@@ -110,7 +138,7 @@ function Messages({
   /**
    * Reference for the list container so we can scroll to elements
    */
-  let listRef: HTMLDivElement | undefined
+  let listRef = useRef<HTMLDivElement>(null)
 
   // We need to cache created objects to prevent needless re-rendering
   const objectCache = new Map()
@@ -146,7 +174,7 @@ function Messages({
    * Safely update messages by applying consistency checks
    * @param messagesArr Array of message arrays
    */
-  function setMessagesSafely(...messagesArray: Message[][]) {
+  function setMessagesSafely(...messagesArray: MessageType[][]) {
     setMessages(messagesArray.flat().toSorted((a, b) => b.id.localeCompare(a.id)))
   }
 
@@ -167,7 +195,7 @@ function Messages({
     collectedMessages = []
 
     try {
-      let messages: Message[]
+      let messages: MessageType[]
       const existingState = cache?.unmanage(channel)
       const useExistingState = existingState && !nearby
 
@@ -222,12 +250,12 @@ function Messages({
         // React has updated the DOM
         // The browser has rendered new messages
         // The list height has been recalculated
-        setTimeout(() => listRef?.scrollTo({ top: existingState.scrollTop, behavior: 'instant' }))
+        setTimeout(() => listRef.current?.scrollTo({ top: existingState.scrollTop, behavior: 'instant' }))
       }
       // Or... Reset scroll to the end
       else if (atEnd) {
         setTimeout(() =>
-          listRef!.scrollTo({
+          listRef.current?.scrollTo({
             top: 9999999,
             behavior: 'instant',
           })
@@ -249,7 +277,7 @@ function Messages({
     const preempted = newPreempted()
 
     try {
-      const res: Message[] = []
+      const res: MessageType[] = []
       if (preempted()) return
 
       // If it's less than we expected, we are at the start
@@ -301,7 +329,7 @@ function Messages({
     const preempted = newPreempted()
 
     try {
-      const result: Message[] = []
+      const result: MessageType[] = []
       if (preempted()) return
 
       // If it's less than we expected, we are at the end
@@ -346,15 +374,15 @@ function Messages({
      * @param el Element
      * @returns Element
      */
-    function findScrollContainer(el: Element | null) {
-      if (!el) return null
-      else if (getComputedStyle(el).overflowY === 'scroll') return el
-      else return el.parentElement
+    function findScrollContainer(el: RefObject<HTMLDivElement | null>) {
+      if (!el.current) return null
+      else if (getComputedStyle(el.current).overflowY === 'scroll') return el.current
+      else return el.current.parentElement?.children[0]
     }
 
     // Scroll to the bottom if we're already at the end
     if (atEnd) {
-      const containerChild = findScrollContainer(listRef!)?.children[0]
+      const containerChild = findScrollContainer(listRef)
       containerChild?.scrollIntoView({ behavior: 'smooth', block: 'end' })
     } else {
       preempt()
@@ -364,13 +392,13 @@ function Messages({
       collectedMessages = []
 
       try {
-        const result: Message[] = []
+        const result: MessageType[] = []
         if (preempted()) return
 
         // Check if we're at the start of the conversation
         // NB. This may be counter-intuitive because we are in history but,
         //     this could be a very rare edge case for large moderation actions
-        if (messages.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) setAtStart(true)
+        if (result.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) setAtStart(true)
         else setAtStart(false)
 
         setAtEnd(true)
@@ -408,7 +436,10 @@ function Messages({
      */
     const scrollToNearestMessage = () => {
       const index = messagesWithTail().findIndex((entry) => entry.t === 0 && entry.message.id === messageId)
-      listRef?.children[index + (atStart ? 1 : 0)].scrollIntoView({ behavior: 'smooth', block: 'center' })
+      listRef.current?.children[index + (atStart ? 1 : 0)].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
     }
 
     if (messages.find((msg) => msg.id === messageId)) {
@@ -422,7 +453,7 @@ function Messages({
     const preempted = newPreempted()
 
     try {
-      const result: Message[] = []
+      const result: MessageType[] = []
       if (preempted()) return
 
       setAtStart(false)
@@ -563,7 +594,7 @@ function Messages({
    * Handle incoming messages
    * @param message Message object
    */
-  function onMessage(message: Message) {
+  function onMessage(message: MessageType) {
     if (message.channelId === channel.id && atEnd) setMessages([message, ...messages])
   }
 
@@ -601,6 +632,29 @@ function Messages({
     }
   })
 
+  /**
+   * Message ids
+   * @returns List of message ids
+   */
+  function sentMessageIdempotency() {
+    return messages.map((msg) => msg.nonce!)
+  }
+
+  function Entry(entry: ListEntry) {
+    return (
+      <>
+        {entry.t === 0 && (
+          <Message
+            message={entry.message}
+            highlight={entry.message.id === highlightedMessageId}
+            editing={entry.message.id === editingMessageId}></Message>
+        )}
+        {entry.t === 1 && <MessageDivider unread={entry.unread} newString={tr.newString} date={entry.date} />}
+        {entry.t === 2 && <MessageBlocked count={entry.count} one={tr.one} plural={tr.plural} />}
+      </>
+    )
+  }
+
   useEffect(() => {
     jumpToBottomRef?.(jumpToBottom)
     atEndRef?.(() => atEnd)
@@ -629,7 +683,7 @@ function Messages({
 
     return () => {
       if (fetching !== 'initial') {
-        cache?.manage(channel, { messages, atStart, atEnd, scrollTop: listRef?.scrollTop })
+        cache?.manage(channel, { messages, atStart, atEnd, scrollTop: listRef.current?.scrollTop })
       }
     }
   }, [channel])
@@ -648,27 +702,41 @@ function Messages({
     }
   }, [editingMessageId])
 
-  return <div></div>
+  return (
+    <>
+      <ListView offsetTop={48} fetchTop={caseFetchUpwards} fetchBottom={caseFetchDownwards}>
+        <div ref={listRef}>
+          {atStart && (
+            <ConversationStart
+              channel={channel}
+              startOfNotes={tr.startOfNotes}
+              startOfConversation={tr.startOfConversation}
+            />
+          )}
+          {messagesWithTail().map((msg) => (
+            <Entry {...msg} />
+          ))}
+          {atEnd && (
+            <>
+              {pendingMessages &&
+                pendingMessages({ tail: pendingMessageIsTrailing(), ids: sentMessageIdempotency() })}
+              {typingIndicator ?? <div className='h-6' />}
+            </>
+          )}
+        </div>
+      </ListView>
+
+      {!atEnd && (
+        <div className='z-30 relative'>
+          <JumpToBottom
+            jumpToPresent={tr.jumpToPresent}
+            viewOlderMessages={tr.viewOlderMessages}
+            onClick={jumpToBottom}
+          />
+        </div>
+      )}
+    </>
+  )
 }
 
 export default Messages
-
-type ListEntry =
-  | // Message
-  {
-    t: 0
-    message: Message
-    tail: boolean
-    highlight: boolean
-  }
-  // Message Divider
-  | {
-    t: 1
-    date?: string
-    unread?: boolean
-  }
-  // Blocked messages
-  | {
-    t: 2
-    count: number
-    }

@@ -61,4 +61,8 @@ export class User {
       RelationshipStatus.None
     )
   }
+
+  get username(): string {
+    return this.#collection.getUnderlyingObject(this.id).username
+  }
 }

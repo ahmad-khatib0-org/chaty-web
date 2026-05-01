@@ -54,6 +54,13 @@ export class Message {
   get author(): User | undefined {
     return this.#collection.client.users.get(this.message.authorId!)
   }
+
+  /**
+   * Nonce value
+   */
+  get nonce(): string | undefined {
+    return this.#collection.getUnderlyingObject(this.id).nonce
+  }
 }
 
 export class MessageWebhook {
