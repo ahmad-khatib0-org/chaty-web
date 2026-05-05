@@ -3,6 +3,7 @@ import { createContext, ReactNode, useContext } from 'react'
 import ClientController from './controller'
 import { useStore } from '@/state'
 import { Client } from 'chaty-client'
+import { User } from 'chaty-client/models'
 
 export * from './controller'
 
@@ -26,4 +27,13 @@ export function useClient(): Client {
 export function useLifecycle() {
   const { lifecycle } = useContext(clientContext)
   return { lifecycle }
+}
+
+/**
+ * Get the currently logged in user
+ * @returns User
+ */
+export function useUser(): User | undefined {
+  const controller = useContext(clientContext)
+  return controller.getCurrentClient()!.user
 }
