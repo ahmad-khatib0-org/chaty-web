@@ -2,6 +2,54 @@
 
 :root {
   --primary-color: #5e0542;
+  :root {
+    /* helper variables */
+    --unset-fg: red;
+    --unset-bg: linear-gradient(to right, red, blue);
+
+    /* message size */
+    --message-size: 16px; /* default, will be overridden by JS */
+    --message-group-spacing: 8px; /* default, will be overridden by JS */
+
+    /* emoji size */
+    --emoji-size: 1.4em;
+    --emoji-size-medium: 48px;
+    --emoji-size-large: 96px;
+
+    /* effects */
+    --effects-blur-md: blur(20px);
+    --effects-invert-black: invert(0%);
+    --effects-invert-light: invert(0%);
+
+    /* transitions */
+    --transitions-fast: 0.1s ease-in-out;
+    --transitions-medium: 0.2s ease;
+
+    /* brand */
+    --brand-presence-online: #3abf7e;
+    --brand-presence-idle: #f39f00;
+    --brand-presence-busy: #f84848;
+    --brand-presence-focus: #4799f0;
+    --brand-presence-invisible: #a5a5a5;
+
+    /* font */
+    --fonts-primary: 'Inter', sans-serif;
+    --fonts-monospace: 'Jetbrains Mono', sans-serif;
+  }
+}
+
+/* Dark mode overrides using prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --effects-invert-black: invert(100%);
+    --effects-invert-light: invert(0%);
+  }
+}
+
+/* Or if dark mode is controlled by a class on body */
+body.dark {
+  --effects-invert-black: invert(100%);
+  --effects-invert-light: invert(0%);
 }
 
 body {
