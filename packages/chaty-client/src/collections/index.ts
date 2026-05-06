@@ -1,4 +1,5 @@
 export * from './server-collection'
+export * from './server-member-collection'
 export * from './message-collection'
 export * from './channel-collection'
 export * from './user-collection'

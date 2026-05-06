@@ -14,8 +14,8 @@ export class File {
       filename: '',
       hash: '',
       id: '',
-      size: '',
-      uploadedAt: '',
+      size: 0,
+      uploadedAt: 0,
       uploaderId: '',
     }
   }

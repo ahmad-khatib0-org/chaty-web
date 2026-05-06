@@ -1,14 +1,14 @@
 import { BehaviorSubject, Observable, share, Subject, Subscription } from 'rxjs'
 
 import type { Channel } from '@chaty-app/proto/web-plain/service/v1/channels_db'
-import type { APIUser } from '@chaty-app/proto/web-plain/service/v1/users'
 import type { ChatyConfig } from '@chaty-app/proto/web-plain/service/v1/config'
 
 import { ConnectionState, EventClient, type EventClientOptions } from './events/event_client'
 import { handleEvent, type ProtocolV1 } from './events/v1'
-import { ServerCollection, UserCollection } from './collections'
-import { Message } from './models'
+import { ChannelCollection, ServerCollection, UserCollection } from './collections'
+import { Message, User } from './models'
 import type { HydratedMessage } from './hydration'
+import { ServerMemberCollection } from './collections/server-member-collection'
 
 export type Session = { id: string; token: string; user_id: string } | string
 
@@ -85,6 +85,8 @@ export class Client {
   // readonly bots
   readonly servers
   readonly users
+  readonly serverMembers
+  readonly channels
 
   readonly options: ClientOptions
   readonly events: EventClient<1>
@@ -92,7 +94,7 @@ export class Client {
   configuration: ChatyConfig | undefined
   #session: Session | undefined
 
-  #userSubject = new BehaviorSubject<APIUser | undefined>(undefined)
+  #userSubject = new BehaviorSubject<User | undefined>(undefined)
 
   #readySubject = new BehaviorSubject<boolean>(false)
   #connectionFailureCountSubject = new BehaviorSubject<number>(0)
@@ -102,12 +104,12 @@ export class Client {
   #reconnectTimeout: number | undefined
   #subscriptions = new Subscription()
 
-  readonly user$: Observable<APIUser | undefined>
+  readonly user$: Observable<User | undefined>
   readonly ready$: Observable<boolean>
   readonly connectionFailureCount$: Observable<number>
 
   // Public accessors for synchronous access
-  get user(): APIUser | undefined {
+  get user(): User | undefined {
     return this.#userSubject.value
   }
 
@@ -159,6 +161,8 @@ export class Client {
 
     this.servers = new ServerCollection(this)
     this.users = new UserCollection(this)
+    this.serverMembers = new ServerMemberCollection(this)
+    this.channels = new ChannelCollection(this)
 
     this.#subscriptions.add(this.events.on.error.subscribe((err) => this.emit('error', err)))
     this.#subscriptions.add(

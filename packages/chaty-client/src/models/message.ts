@@ -7,6 +7,9 @@ import type { MessageCollection } from '../collections'
 import type { HydratedMessage } from '../hydration'
 import type { MessageSystem } from './message-system'
 import type { User } from './user'
+import type { MessageEmbed } from './message-embed'
+import type { ServerMember } from './server-member'
+import type { Channel } from './channel'
 
 export class Message {
   readonly #collection: MessageCollection
@@ -61,6 +64,56 @@ export class Message {
   get nonce(): string | undefined {
     return this.#collection.getUnderlyingObject(this.id).nonce
   }
+
+  get embeds(): MessageEmbed[] {
+    return this.message.embeds
+  }
+
+  get content() {
+    return this.message.content
+  }
+
+  /**
+   * Get the role colour for this message
+   */
+  get roleColour(): string | undefined {
+    return this.masquerade?.colour ?? this.member?.roleColour
+  }
+
+  /**
+   * Member this message was sent by
+   */
+  get member(): ServerMember | undefined {
+    return this.#collection.client.serverMembers.getByKey({
+      server: this.channel?.serverId as string,
+      user: this.authorId!,
+    })
+  }
+
+  /**
+   * Channel this message was sent in
+   */
+  get channel(): Channel | undefined {
+    return this.#collection.client.channels.get(this.#collection.getUnderlyingObject(this.id).channelId)
+  }
+
+  /**
+   * Get the username for this message
+   */
+  get username(): string | undefined {
+    const webhook = this.webhook
+
+    return (
+      this.masquerade?.name ?? (webhook ? webhook.name : (this.member?.nickname ?? this.author?.username))
+    )
+  }
+
+  /**
+   * Webhook information for this message
+   */
+  get webhook(): MessageWebhook | undefined {
+    return this.#collection.getUnderlyingObject(this.id).webhook!
+  }
 }
 
 export class MessageWebhook {
@@ -68,5 +121,13 @@ export class MessageWebhook {
 
   constructor(webhook: MessageWebhookAPI) {
     this.webhook = webhook
+  }
+
+  get name() {
+    return this.webhook.name
+  }
+
+  get avatar() {
+    return this.webhook.avatar
   }
 }

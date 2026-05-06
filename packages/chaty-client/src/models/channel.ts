@@ -82,6 +82,13 @@ export class Channel {
   }
 
   /**
+   * Server ID
+   */
+  get serverId(): string | undefined {
+    return this.text?.serverId
+  }
+
+  /**
    * Recipients of the group
    */
   get recipients(): User[] {

@@ -1,6 +1,7 @@
 import { botHydration } from './bot'
 
 export * from './server'
+export * from './server-member'
 export * from './message'
 export * from './channel'
 export * from './user'

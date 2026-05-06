@@ -1,4 +1,6 @@
 export * from './server'
+export * from './server-member'
+export * from './server-role'
 export * from './message'
 export * from './message-system'
 export * from './message-embed'

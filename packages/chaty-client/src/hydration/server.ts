@@ -1,8 +1,11 @@
 import type { Hydrate } from '.'
 
 import type { Server } from '@chaty-app/proto/web-plain/service/v1/servers_db'
+import type { ServerRole } from '../models'
 
-export type HydratedServer = Server & {}
+export type HydratedServer = Omit<Server, 'roles'> & {
+  roles: Record<string, ServerRole>
+}
 
 export const serverHydration: Hydrate<Server, HydratedServer> = {
   keyMapping: {},

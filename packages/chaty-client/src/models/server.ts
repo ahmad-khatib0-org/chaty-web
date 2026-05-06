@@ -1,4 +1,6 @@
 import { type ServerCollection } from '../collections'
+import type { ServerMember } from './server-member'
+import type { ServerRole } from './server-role'
 
 export class Server {
   readonly #collection: ServerCollection
@@ -35,5 +37,22 @@ export class Server {
    */
   resetSyncStatus(): void {
     this.#synced = undefined
+  }
+
+  /**
+   * Roles
+   */
+  get roles(): Record<string, ServerRole> {
+    return this.#collection.getUnderlyingObject(this.id).roles
+  }
+
+  /**
+   * Own member object for this server
+   */
+  get member(): ServerMember | undefined {
+    return this.#collection.client.serverMembers.getByKey({
+      server: this.id,
+      user: this.#collection.client.user!.id,
+    })
   }
 }
