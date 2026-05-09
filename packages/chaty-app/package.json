@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@chaty-app/proto": "^0.1.76",
+    "@chaty-app/proto": "^0.1.80",
     "@connectrpc/connect": "^2.1.1",
     "@connectrpc/connect-web": "^2.1.1",
     "@fingerprintjs/fingerprintjs": "^5.0.1",
@@ -25,6 +25,7 @@
     "jwt-decode": "^4.0.0",
     "localforage": "^1.10.0",
     "mantine-form-yup-resolver": "^2.0.0",
+    "mdast-util-to-hast": "^13.2.1",
     "mustache": "^4.2.0",
     "next": "16.1.1",
     "opossum": "^9.0.0",
@@ -35,6 +36,7 @@
     "server-only": "^0.0.1",
     "ua-parser-js": "^2.0.7",
     "ulid": "^3.0.2",
+    "unist-util-visit": "^5.1.0",
     "yup": "^1.7.1",
     "zustand": "^5.0.9"
   },

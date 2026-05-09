@@ -112,6 +112,10 @@
     "tr": "Password confirmation does not match password"
   },
   {
+    "id": "users.bot",
+    "tr": "Bot"
+  },
+  {
     "id": "password.min_length",
     "tr": "password minimum length should be {{Min}} characters"
   },
@@ -448,14 +452,17 @@
     "tr": "Your saved messages and bookmarks"
   },
   {
+    "id": "message.official_communication",
+    "tr": "Official Communication"
+  },
+  {
     "id": "app.settings.title",
     "tr": "Settings"
   },
   {
     "id": "app.settings.description",
     "tr": "Manage your account and preferences"
-  }
-,
+  },
   {
     "id": "app.groups.no_groups",
     "tr": "No groups yet. Create one to get started!"
@@ -467,8 +474,7 @@
   {
     "id": "app.groups.no_more",
     "tr": "No more groups"
-  }
-,
+  },
   {
     "id": "app.groups.member",
     "tr": "member"
