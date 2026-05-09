@@ -267,4 +267,17 @@ export class Client {
   useExistingSession(session: Session): void {
     this.#session = session
   }
+
+  /**
+   * Proxy a file through January.
+   * @param url URL to proxy
+   * @returns Proxied media URL
+   */
+  proxyFile(url: string): string | undefined {
+    if (this.configuration?.features?.proxy?.enabled) {
+      return `${this.configuration.features.proxy.url}/proxy?url=${encodeURIComponent(url)}`
+    } else {
+      return url
+    }
+  }
 }

@@ -3,6 +3,7 @@ import type { Role } from '@chaty-app/proto/web-plain/service/v1/roles_db'
 import type { ServerMemberCollection } from '../collections'
 import type { Server } from './server'
 import type { User } from './user'
+import type { File } from './file'
 
 /**
  * Deterministic conversion of member composite key to string ID
@@ -94,5 +95,19 @@ export class ServerMember {
    */
   get nickname(): string | undefined {
     return this.#collection.getUnderlyingObject(key(this.id)).nickname
+  }
+
+  /**
+   * Avatar
+   */
+  get avatar(): File | undefined {
+    return this.#collection.getUnderlyingObject(key(this.id)).avatar
+  }
+
+  /**
+   * URL to the member's avatar
+   */
+  get avatarURL(): string | undefined {
+    return this.avatar?.createFileURL() ?? this.user?.avatarURL
   }
 }

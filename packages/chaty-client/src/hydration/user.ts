@@ -2,6 +2,7 @@ import type { APIUser } from '@chaty-app/proto/web-plain/service/v1/users'
 
 import type { Hydrate } from '.'
 import { File } from '../models'
+import type { Client } from '../client'
 
 export type HydratedUser = Omit<APIUser, 'avatar'> & {
   avatar?: File
@@ -23,7 +24,7 @@ export const userHydration: Hydrate<APIUser, HydratedUser> = {
     statusPresence: (user) => user.statusPresence,
     statusText: (user) => user.statusText,
     suspendedUntil: (user) => user.suspendedUntil,
-    avatar: (user, ctx) => new File(user.avatar ?? File.getDefaultAPIFile()),
+    avatar: (user, ctx) => new File(ctx as Client, user.avatar ?? File.getDefaultAPIFile()),
     bot: (user) => user.bot!,
     verified: (user) => user.verified,
     createdAt: (user) => user.createdAt,

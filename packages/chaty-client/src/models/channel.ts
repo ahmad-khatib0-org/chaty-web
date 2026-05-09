@@ -6,6 +6,7 @@ import type {
 } from '@chaty-app/proto/web-plain/service/v1/channels_db'
 import { ChannelCollection } from '../collections'
 import type { User } from './user'
+import type { Server } from './server'
 
 export enum ChannelType {
   Text = 'text',
@@ -86,6 +87,15 @@ export class Channel {
    */
   get serverId(): string | undefined {
     return this.text?.serverId
+  }
+
+  /**
+   * Server this channel is in
+   */
+  get server(): Server | undefined {
+    return this.#collection.client.servers.get(
+      this.#collection.getUnderlyingObject(this.id).text?.serverId ?? ''
+    )
   }
 
   /**

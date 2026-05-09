@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import { Ripple, Initials } from '.'
 
-export type Props = {
+type Props = {
   /**
    * Avatar size
    */

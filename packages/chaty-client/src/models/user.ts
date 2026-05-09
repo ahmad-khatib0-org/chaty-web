@@ -1,4 +1,5 @@
 import type { UserCollection } from '../collections'
+import type { File } from './file'
 
 export const RelationshipStatus = {
   None: 'None',
@@ -64,5 +65,40 @@ export class User {
 
   get username(): string {
     return this.#collection.getUnderlyingObject(this.id).username
+  }
+
+  /**
+   * Avatar
+   */
+  get avatar(): File | undefined {
+    return this.#collection.getUnderlyingObject(this.id).avatar
+  }
+
+  /**
+   * Whether the user is privileged
+   */
+  get privileged(): boolean {
+    return this.#collection.getUnderlyingObject(this.id).privileged
+  }
+
+  /**
+   * Bot information
+   */
+  get bot(): { owner: string } | undefined {
+    return this.#collection.getUnderlyingObject(this.id).bot
+  }
+
+  /**
+   * URL to the user's avatar
+   */
+  get avatarURL(): string {
+    return this.avatar?.createFileURL() ?? this.defaultAvatarURL
+  }
+
+  /**
+   * URL to the user's default avatar
+   */
+  get defaultAvatarURL(): string {
+    return `${this.#collection.client.options.baseURL}/users/${this.id}/default_avatar`
   }
 }
