@@ -482,5 +482,65 @@
   {
     "id": "app.groups.members",
     "tr": "members"
+  },
+  {
+    "id": "messages.system.user_added",
+    "tr": "{{user}} added {{targetUser}}"
+  },
+  {
+    "id": "messages.system.user_remove",
+    "tr": "{{user}} removed {{targetUser}}"
+  },
+  {
+    "id": "messages.system.user_joined",
+    "tr": "{{user}} joined the channel"
+  },
+  {
+    "id": "messages.system.user_left_group",
+    "tr": "{{user}} left the group"
+  },
+  {
+    "id": "messages.system.user_left_server",
+    "tr": "{{user}} left the server"
+  },
+  {
+    "id": "messages.system.user_kicked",
+    "tr": "{{user}} was kicked"
+  },
+  {
+    "id": "messages.system.user_banned",
+    "tr": "{{user}} was banned"
+  },
+  {
+    "id": "messages.system.channel_renamed",
+    "tr": "{{user}} renamed channel to {{name}}"
+  },
+  {
+    "id": "messages.system.channel_description_changed",
+    "tr": "{{user}} changed the channel description"
+  },
+  {
+    "id": "messages.system.channel_icon_changed",
+    "tr": "{{user}} changed the channel icon"
+  },
+  {
+    "id": "messages.system.channel_ownership_changed",
+    "tr": "{{fromUser}} transferred ownership to {{toUser}}"
+  },
+  {
+    "id": "messages.system.message_pinned",
+    "tr": "{{user}} pinned a message"
+  },
+  {
+    "id": "messages.system.message_unpinned",
+    "tr": "{{user}} unpinned a message"
+  },
+  {
+    "id": "messages.system.call_started",
+    "tr": "{{user}} started a call"
+  },
+  {
+    "id": "messages.system.call_started_with_duration",
+    "tr": "{{user}} started a call that lasted {{duration}}"
   }
 ]
