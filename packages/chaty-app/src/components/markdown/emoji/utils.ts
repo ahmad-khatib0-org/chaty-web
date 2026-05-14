@@ -1,4 +1,5 @@
 import emojiRegex from 'emoji-regex'
+import { MarkdownProps } from '..'
 
 /**
  * Regex for custom emoji
@@ -41,4 +42,43 @@ export function toCodepoint(input: string) {
   }
 
   return ''
+}
+
+/**
+ * Check if a piece of text is only comprised of emoji
+ * @param text Text
+ * @returns Whether it is only emoji
+ */
+export function isOnlyEmoji(text: string) {
+  return text.replaceAll(RE_ANY_EMOJI, '').trim().length === 0
+}
+
+/**
+ * Inject emoji size information into a hast node
+ * @param props Pass-through Markdown props
+ * @param hastNode Target hast node
+ */
+export function injectEmojiSize(
+  { content, disallowBigEmoji }: MarkdownProps,
+  hastNode: { children?: { properties: Record<string, string> }[] }
+) {
+  // inject emoji size information
+  const properties = (hastNode as { children?: { properties: Record<string, string> }[] }).children?.[0]
+    .properties
+
+  if (properties) {
+    if (!disallowBigEmoji && isOnlyEmoji(content ?? '')) {
+      RE_ANY_EMOJI.lastIndex = 0
+      RE_ANY_EMOJI.exec(content ?? '')
+
+      // large by default
+      let size = 'large'
+
+      // check if we match more than one
+      // if so, make it slightly smaller
+      if (RE_ANY_EMOJI.exec(content ?? '')) size = 'medium'
+
+      properties['emojiSize'] = size
+    }
+  }
 }
