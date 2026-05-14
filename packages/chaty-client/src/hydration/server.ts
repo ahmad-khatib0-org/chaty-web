@@ -1,10 +1,12 @@
 import type { Hydrate } from '.'
 
 import type { Server } from '@chaty-app/proto/web-plain/service/v1/servers_db'
-import type { ServerRole } from '../models'
+import { File, type ServerRole } from '../models'
+import type { Client } from '../client'
 
-export type HydratedServer = Omit<Server, 'roles'> & {
+export type HydratedServer = Omit<Server, 'roles' | 'icon'> & {
   roles: Record<string, ServerRole>
+  icon?: File
 }
 
 export const serverHydration: Hydrate<Server, HydratedServer> = {
@@ -20,7 +22,7 @@ export const serverHydration: Hydrate<Server, HydratedServer> = {
     systemMessages: (server) => server.systemMessages ?? {},
     roles: (server) => server.roles,
     defaultPermissions: (server) => server.defaultPermissions,
-    icon: (server, ctx) => server.icon,
+    icon: (server, ctx) => new File(ctx as Client, server.icon ?? File.getDefaultAPIFile()),
     banner: (server, ctx) => server.banner,
     flags: (server) => server.flags!,
     analytics: (server) => server.analytics || false,

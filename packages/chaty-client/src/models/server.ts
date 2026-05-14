@@ -1,4 +1,5 @@
 import { type ServerCollection } from '../collections'
+import type { File } from './file'
 import type { ServerMember } from './server-member'
 import type { ServerRole } from './server-role'
 
@@ -54,5 +55,26 @@ export class Server {
       server: this.id,
       user: this.#collection.client.user!.id,
     })
+  }
+
+  /**
+   * Icon
+   */
+  get icon(): File | undefined {
+    return this.#collection.getUnderlyingObject(this.id).icon
+  }
+
+  /**
+   * URL to the server's icon
+   */
+  get iconURL(): string | undefined {
+    return this.icon?.createFileURL()
+  }
+
+  /**
+   * Name
+   */
+  get name(): string {
+    return this.#collection.getUnderlyingObject(this.id).name
   }
 }
