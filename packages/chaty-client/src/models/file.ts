@@ -1,4 +1,4 @@
-import { File as APIFile } from '@chaty-app/proto/web-plain/shared/v1/files'
+import { File as APIFile, FileMetadata } from '@chaty-app/proto/web-plain/shared/v1/files'
 
 import { Client } from '../client'
 
@@ -34,6 +34,9 @@ export class File {
    */
   readonly size?: number
 
+  readonly metadata?: FileMetadata | undefined
+  readonly isSpoiler: boolean
+
   constructor(client: Client, file: APIFile) {
     this.#file = file
     this.client = client
@@ -43,6 +46,22 @@ export class File {
     this.filename = this.#file.filename
     this.contentType = this.#file.contentType
     this.size = this.#file.size
+    this.metadata = this.#file.metadata
+    this.isSpoiler = this.#file.isSpoiler
+  }
+
+  /**
+   * Preview URL for the file
+   */
+  get previewUrl(): string {
+    return `${this.client.configuration?.features?.files?.url}/${this.tag}/${this.id}`
+  }
+
+  /**
+   * Original download URL for the file
+   */
+  get originalUrl(): string {
+    return `${this.client.configuration?.features?.files?.url}/${this.tag}/${this.id}/original`
   }
 
   static getDefaultAPIFile(): APIFile {
@@ -55,6 +74,7 @@ export class File {
       size: 0,
       uploadedAt: 0,
       uploaderId: '',
+      isSpoiler: false,
     }
   }
 

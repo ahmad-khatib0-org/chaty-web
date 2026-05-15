@@ -1,10 +1,12 @@
+import { ReactNode } from 'react'
 import { MessageSystem as MessageSystemClass } from '@chaty-app/proto/web-plain/service/v1/messages_db'
 
+import { User } from 'chaty-client/models'
 import { UserMention } from '@/markdown/plugins/mentions'
 
 interface Props {
   systemMessage: MessageSystemClass
-  menuGenerator: (user?: any) => any
+  menuGenerator: (user?: User) => ReactNode
   isServer: boolean
   tr: {
     user_added: string

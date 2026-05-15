@@ -1,5 +1,6 @@
 export * from './message-divider'
 export * from './message-blocked'
-export * from './jump-to-bottom'
 export * from './message-toolbar'
+export * from './jump-to-bottom'
 export * from './system-message-icon'
+export * from './system-message'

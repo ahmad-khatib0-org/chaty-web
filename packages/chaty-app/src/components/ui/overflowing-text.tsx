@@ -7,3 +7,15 @@ export function OverflowingText({ children }: { children: ReactNode }) {
     </div>
   )
 }
+
+/**
+ * Break all text and prevent overflow from math blocks
+ */
+export function BreakText({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={`wrap-break-word [&_.math]:overflow-x-auto [&_.math]:overflow-y-hidden [&_.math]:max-h-screen ${className}`}>
+      {children}
+    </div>
+  )
+}
