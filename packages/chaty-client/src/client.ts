@@ -269,11 +269,11 @@ export class Client {
   }
 
   /**
-   * Proxy a file through January.
+   * Proxy a file through proxy.
    * @param url URL to proxy
    * @returns Proxied media URL
    */
-  proxyFile(url: string): string | undefined {
+  proxyFile(url: string): string {
     if (this.configuration?.features?.proxy?.enabled) {
       return `${this.configuration.features.proxy.url}/proxy?url=${encodeURIComponent(url)}`
     } else {

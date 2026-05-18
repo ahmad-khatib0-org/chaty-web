@@ -13,6 +13,7 @@ import type { Channel } from './channel'
 import type { Client } from '../client'
 import type { Server } from './server'
 import type { ServerRole } from './server-role'
+import type { File } from './file'
 
 export class Message {
   readonly #collection: MessageCollection
@@ -39,7 +40,7 @@ export class Message {
    * Time at which this message was edited
    */
   get editedAt(): number | undefined {
-    return this.#collection.getUnderlyingObject(this.id).editedAt
+    return this.message.editedAt
   }
 
   get authorId() {
@@ -72,7 +73,7 @@ export class Message {
    * Nonce value
    */
   get nonce(): string | undefined {
-    return this.#collection.getUnderlyingObject(this.id).nonce
+    return this.message.nonce
   }
 
   get embeds(): MessageEmbed[] {
@@ -87,21 +88,21 @@ export class Message {
    * Flags
    */
   get flags(): number {
-    return this.#collection.getUnderlyingObject(this.id).flags || 0
+    return this.message.flags || 0
   }
 
   /**
    * IDs of users this message mentions
    */
   get mentionIds(): string[] | undefined {
-    return this.#collection.getUnderlyingObject(this.id).mentions
+    return this.message.mentions
   }
 
   /**
    * IDs of roles this message mentions
    */
   get roleMentionIds(): string[] | undefined {
-    return this.#collection.getUnderlyingObject(this.id).roleMentions
+    return this.message.roleMentions
   }
 
   /**
@@ -109,6 +110,13 @@ export class Message {
    */
   get server(): Server | undefined {
     return this.channel?.server
+  }
+
+  /**
+   * Attachments
+   */
+  get attachments(): File[] | undefined {
+    return this.message.attachments
   }
 
   /**
@@ -152,7 +160,7 @@ export class Message {
    * Channel this message was sent in
    */
   get channel(): Channel | undefined {
-    return this.#collection.client.channels.get(this.#collection.getUnderlyingObject(this.id).channelId)
+    return this.#collection.client.channels.get(this.message.channelId)
   }
 
   /**
@@ -170,7 +178,7 @@ export class Message {
    * Webhook information for this message
    */
   get webhook(): MessageWebhook | undefined {
-    return this.#collection.getUnderlyingObject(this.id).webhook
+    return this.message.webhook
   }
 
   /**

@@ -6,10 +6,13 @@ import { Message as MessageType, WebsiteEmbed } from 'chaty-client/models'
 
 import { useClient } from '@/context/client'
 import { MessageContainer } from './message-container'
-import { Avatar, ColouredText } from '../ui'
+import { Avatar, BreakText, ColouredText } from '../ui'
 import { MessageReply } from './message-reply'
 import { ObjString } from '@/types/shared'
-import { SystemMessageIcon } from '../messaging'
+import { SystemMessage, SystemMessageIcon } from '../messaging'
+import { MessageEdit } from './message-edit'
+import { Markdown } from '../markdown'
+import { Attachment, Embed } from '../messaging/elements'
 
 /**
  * Regex for matching URLs
@@ -59,6 +62,27 @@ export function Message({ tr, highlight, tail, editing, message, isLink }: Props
       !!message.content &&
       !message.content.replace(RE_URL, '').length
     )
+  }
+
+  function getSystemMessageTr() {
+    return {
+      user_added: tr.userAdded,
+      user_remove: tr.userRemove,
+      user_left_group: tr.userLeftGroup,
+      user_left_server: tr.userLeftServer,
+      user_kicked: tr.userKicked,
+      user_banned: tr.userBanned,
+      user_joined: tr.userJoined,
+      channel_renamed: tr.channelRenamed,
+      channel_description_changed: tr.channelDescriptionChanged,
+      channel_icon_changed: tr.channelIconChanged,
+      channel_ownership_changed: tr.channelOwnershipChanged,
+      message_pinned: tr.messagePinned,
+      message_unpinned: tr.messageUnpinned,
+      call_started: tr.callStarted,
+      call_started_with_duration: tr.callStartedWithDuration,
+      call_duration: tr.callDuration,
+    }
   }
 
   return (
@@ -143,9 +167,32 @@ export function Message({ tr, highlight, tail, editing, message, isLink }: Props
             isServer={!!message.server}
           />
         )
-      }
-    >
-      {message.system &&  }
+      }>
+      {message.system && (
+        <SystemMessage
+          systemMessage={message.system}
+          isServer={!!message.server}
+          menuGenerator={() => <></>}
+          params={{}}
+          tr={getSystemMessageTr()}
+        />
+      )}
+      {editing && <MessageEdit />}
+      {message.content && !isOnlyGIF() && (
+        <BreakText>
+          <Markdown content={message.content} />
+        </BreakText>
+      )}
+      {message.attachments && (
+        <>
+          {message.attachments.map((att) => (
+            <Attachment message={message} file={att} tr={tr} />
+          ))}
+        </>
+      )}
+      {message.embeds.map((embed) => (
+        <Embed embed={embed} tr={tr} />
+      ))}
     </MessageContainer>
   )
 }

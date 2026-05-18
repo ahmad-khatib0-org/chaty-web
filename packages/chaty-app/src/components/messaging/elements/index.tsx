@@ -1,3 +1,6 @@
 export * from './attachment'
 export * from './file-info'
 export * from './text-file'
+export * from './embed'
+export * from './embed-text'
+export * from './embed-special'

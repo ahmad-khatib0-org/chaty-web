@@ -44,7 +44,7 @@ export const messageHydration: Hydrate<Message, HydratedMessage> = {
     system: (message: Message) => (message.system ? new MessageSystem(message.system) : undefined),
     attachments: (message, ctx) => message.attachments!.map((file) => new File(ctx as Client, file)),
     editedAt: (message) => message.editedAt,
-    embeds: (message, ctx) => message.embeds!.map((embed) => MessageEmbed.from(embed)),
+    embeds: (message, ctx) => message.embeds!.map((embed) => MessageEmbed.from(embed, ctx as Client)),
     mentions: (message) => message.mentions,
     roleMentions: (message) => message.roleMentions,
     replies: (message) => message.replies,

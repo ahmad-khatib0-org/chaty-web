@@ -1,22 +1,24 @@
-import type { File } from '@chaty-app/proto/web-plain/shared/v1/files'
-import type {
+import {
   BandcampType,
-  Embed,
-  EmbedAppleMusic,
-  EmbedBandcamp,
-  EmbedImage,
-  EmbedLightspeed,
-  EmbedSpotify,
-  EmbedStreamable,
-  EmbedText,
-  EmbedTwitch,
-  EmbedVideo,
-  EmbedWebsiteMetadata,
-  EmbedYouTube,
-  ImageSize,
-  LightspeedType,
   TwitchType,
+  type Embed,
+  type EmbedAppleMusic,
+  type EmbedBandcamp,
+  type EmbedImage,
+  type EmbedLightspeed,
+  type EmbedSpotify,
+  type EmbedStreamable,
+  type EmbedText,
+  type EmbedTwitch,
+  type EmbedVideo,
+  type EmbedWebsiteMetadata,
+  type EmbedYouTube,
+  type ImageSize,
+  type LightspeedType,
 } from '@chaty-app/proto/web-plain/service/v1/messages_db'
+
+import type { Client } from '../client'
+import { File } from './file'
 
 export abstract class MessageEmbed {
   constructor() { }
@@ -27,15 +29,15 @@ export abstract class MessageEmbed {
    * @param embed Data
    * @returns Embed
    */
-  static from(embed: Embed): MessageEmbed {
+  static from(embed: Embed, client: Client): MessageEmbed {
     if (embed.text) {
-      return new TextEmbed(embed.text)
+      return new TextEmbed(embed.text, client)
     } else if (embed.image) {
-      return new ImageEmbed(embed.image)
+      return new ImageEmbed(embed.image, client)
     } else if (embed.video) {
-      return new VideoEmbed(embed.video)
+      return new VideoEmbed(embed.video, client)
     } else if (embed.website) {
-      return new WebsiteEmbed(embed.website)
+      return new WebsiteEmbed(embed.website, client)
     } else {
       return new UnknownEmbed()
     }
@@ -52,10 +54,12 @@ export class UnknownEmbed extends MessageEmbed { }
  */
 export class ImageEmbed extends MessageEmbed {
   readonly embed: EmbedImage
+  readonly client: Client
 
-  constructor(embed: EmbedImage) {
+  constructor(embed: EmbedImage, client: Client) {
     super()
     this.embed = embed
+    this.client = client
   }
 
   get url(): string {
@@ -77,6 +81,13 @@ export class ImageEmbed extends MessageEmbed {
   get aspectRatio(): number {
     return this.width / this.height
   }
+
+  /**
+   * Proxied image URL
+   */
+  get proxiedURL(): string {
+    return this.client.proxyFile(this.url)
+  }
 }
 
 /**
@@ -84,14 +95,16 @@ export class ImageEmbed extends MessageEmbed {
  */
 export class VideoEmbed extends MessageEmbed {
   readonly embed: EmbedVideo
+  readonly client: Client
 
   /**
    * Construct Video Embed
    * @param embed Embed
    */
-  constructor(embed: EmbedVideo) {
+  constructor(embed: EmbedVideo, client: Client) {
     super()
     this.embed = embed
+    this.client = client
   }
 
   get url(): string {
@@ -109,6 +122,13 @@ export class VideoEmbed extends MessageEmbed {
   get aspectRatio(): number {
     return this.width / this.height
   }
+
+  /**
+   * Proxied image URL
+   */
+  get proxiedURL(): string {
+    return this.client.proxyFile(this.url)
+  }
 }
 
 /**
@@ -116,14 +136,16 @@ export class VideoEmbed extends MessageEmbed {
  */
 export class WebsiteEmbed extends MessageEmbed {
   readonly embed: EmbedWebsiteMetadata
+  readonly client: Client
 
   /**
    * Construct WebsiteEmbed Embed
    * @param embed Embed
    */
-  constructor(embed: EmbedWebsiteMetadata) {
+  constructor(embed: EmbedWebsiteMetadata, client: Client) {
     super()
     this.embed = embed
+    this.client = client
   }
 
   get special() {
@@ -145,7 +167,7 @@ export class WebsiteEmbed extends MessageEmbed {
     return !!this.embed.special?.youtube
   }
 
-  get youTubeData(): EmbedYouTube | undefined {
+  get youTube(): EmbedYouTube | undefined {
     return this.embed.special?.youtube
   }
 
@@ -162,7 +184,7 @@ export class WebsiteEmbed extends MessageEmbed {
     return !!this.embed.special?.lightspeed
   }
 
-  get lightspeedData(): EmbedLightspeed | undefined {
+  get lightspeed(): EmbedLightspeed | undefined {
     return this.embed.special?.lightspeed
   }
 
@@ -179,7 +201,7 @@ export class WebsiteEmbed extends MessageEmbed {
     return !!this.embed.special?.twitch
   }
 
-  get twitchData(): EmbedTwitch | undefined {
+  get twitch(): EmbedTwitch | undefined {
     return this.embed.special?.twitch
   }
 
@@ -196,7 +218,7 @@ export class WebsiteEmbed extends MessageEmbed {
     return !!this.embed.special?.spotify
   }
 
-  get spotifyData(): EmbedSpotify | undefined {
+  get spotify(): EmbedSpotify | undefined {
     return this.embed.special?.spotify
   }
 
@@ -218,7 +240,7 @@ export class WebsiteEmbed extends MessageEmbed {
     return !!this.embed.special?.bandcamp
   }
 
-  get bandcampData(): EmbedBandcamp | undefined {
+  get bandcamp(): EmbedBandcamp | undefined {
     return this.embed.special?.bandcamp
   }
 
@@ -235,7 +257,7 @@ export class WebsiteEmbed extends MessageEmbed {
     return !!this.embed.special?.appleMusic
   }
 
-  get appleMusicData(): EmbedAppleMusic | undefined {
+  get appleMusic(): EmbedAppleMusic | undefined {
     return this.embed.special?.appleMusic
   }
 
@@ -252,7 +274,7 @@ export class WebsiteEmbed extends MessageEmbed {
     return !!this.embed.special?.streamable
   }
 
-  get streamableData(): EmbedStreamable | undefined {
+  get streamable(): EmbedStreamable | undefined {
     return this.embed.special?.streamable
   }
 
@@ -277,12 +299,12 @@ export class WebsiteEmbed extends MessageEmbed {
     return this.embed.description
   }
 
-  get image(): EmbedImage | undefined {
-    return this.embed.image
+  get image(): ImageEmbed | undefined {
+    return this.embed.image ? new ImageEmbed(this.embed.image, this.client) : undefined
   }
 
-  get video(): EmbedVideo | undefined {
-    return this.embed.video
+  get video(): VideoEmbed | undefined {
+    return this.embed.video ? new VideoEmbed(this.embed.video, this.client) : undefined
   }
 
   get siteName(): string | undefined {
@@ -297,45 +319,58 @@ export class WebsiteEmbed extends MessageEmbed {
     return this.embed.colour
   }
 
-  // Utility getters
-  get hasSpecialContent(): boolean {
-    return (
-      !!this.embed.special &&
-      (this.isGif ||
-        this.isYouTube ||
-        this.isLightspeed ||
-        this.isTwitch ||
-        this.isSpotify ||
-        this.isSoundcloud ||
-        this.isBandcamp ||
-        this.isAppleMusic ||
-        this.isStreamable)
-    )
+  /**
+   * Proxied icon URL
+   */
+  get proxiedIconURL(): string | undefined {
+    return this.iconUrl ? this.client.proxyFile(this.iconUrl) : undefined
   }
 
-  get specialType():
-    | 'none'
-    | 'gif'
-    | 'youtube'
-    | 'lightspeed'
-    | 'twitch'
-    | 'spotify'
-    | 'soundcloud'
-    | 'bandcamp'
-    | 'appleMusic'
-    | 'streamable'
-    | null {
-    if (this.isNone) return 'none'
-    if (this.isGif) return 'gif'
-    if (this.isYouTube) return 'youtube'
-    if (this.isLightspeed) return 'lightspeed'
-    if (this.isTwitch) return 'twitch'
-    if (this.isSpotify) return 'spotify'
-    if (this.isSoundcloud) return 'soundcloud'
-    if (this.isBandcamp) return 'bandcamp'
-    if (this.isAppleMusic) return 'appleMusic'
-    if (this.isStreamable) return 'streamable'
-    return null
+  /**
+   * If special content is present, generate the embed URL
+   */
+  get embedURL(): string | undefined {
+    const special = this.special
+
+    if (!special) return undefined
+
+    if (special.youtube) {
+      let timestamp = ''
+      if (special.youtube.timestamp) {
+        timestamp = `&start=${special.youtube.timestamp}`
+      }
+      return `https://www.youtube-nocookie.com/embed/${special.youtube.id}?modestbranding=1${timestamp}`
+    }
+
+    if (special.twitch) {
+      return `https://player.twitch.tv/?${twitchTypeToString(special.twitch.contentType)}=${special.twitch.id
+        }&parent=${(window ?? {})?.location?.hostname}&autoplay=false`
+    }
+
+    if (special.lightspeed) {
+      return `https://new.lightspeed.tv/embed/${special.lightspeed.id}/stream`
+    }
+
+    if (special.spotify) {
+      return `https://open.spotify.com/embed/${special.spotify.contentType}/${special.spotify.id}`
+    }
+
+    if (special.soundcloud) {
+      return `https://w.soundcloud.com/player/?url=${encodeURIComponent(
+        this.url!
+      )}&color=%23FF7F50&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`
+    }
+
+    if (special.bandcamp) {
+      return `https://bandcamp.com/EmbeddedPlayer/${bandcampTypeToString(special.bandcamp.contentType)}=${special.bandcamp.id
+        }/size=large/bgcol=181a1b/linkcol=056cc4/tracklist=false/transparent=true/`
+    }
+
+    if (special.streamable) {
+      return `https://streamable.com/e/${special.streamable.id}?loop=0`
+    }
+
+    return undefined
   }
 }
 
@@ -344,15 +379,17 @@ export class WebsiteEmbed extends MessageEmbed {
  */
 export class TextEmbed extends MessageEmbed {
   readonly embed: EmbedText
+  readonly client: Client
 
   /**
    * Construct Video Embed
    * @param client Client
    * @param embed Embed
    */
-  constructor(embed: EmbedText) {
+  constructor(embed: EmbedText, client: Client) {
     super()
     this.embed = embed
+    this.client = client
   }
 
   // Basic getters
@@ -373,7 +410,7 @@ export class TextEmbed extends MessageEmbed {
   }
 
   get media(): File | undefined {
-    return this.embed.media
+    return this.embed.media ? new File(this.client, this.embed.media) : undefined
   }
 
   get colour(): string | undefined {
@@ -431,5 +468,29 @@ export class TextEmbed extends MessageEmbed {
   // For link previews
   get isLinkPreview(): boolean {
     return this.hasUrl && !this.isEmpty
+  }
+}
+
+function twitchTypeToString(type: TwitchType): string {
+  switch (type) {
+    case TwitchType.TWITCH_CHANNEL:
+      return 'channel'
+    case TwitchType.TWITCH_VIDEO:
+      return 'video'
+    case TwitchType.TWITCH_CLIP:
+      return 'clip'
+    default:
+      return 'channel'
+  }
+}
+
+function bandcampTypeToString(type: BandcampType): string {
+  switch (type) {
+    case BandcampType.BANDCAMP_ALBUM:
+      return 'album'
+    case BandcampType.BANDCAMP_TRACK:
+      return 'track'
+    default:
+      return 'album'
   }
 }
