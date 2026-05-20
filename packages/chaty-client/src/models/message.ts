@@ -1,4 +1,5 @@
 import {
+  Interactions,
   Masquerade,
   MessageWebhook as MessageWebhookAPI,
 } from '@chaty-app/proto/web-plain/service/v1/messages_db'
@@ -14,6 +15,7 @@ import type { Client } from '../client'
 import type { Server } from './server'
 import type { ServerRole } from './server-role'
 import type { File } from './file'
+import type { StringArray } from '@chaty-app/proto/web-plain/shared/v1/types'
 
 export class Message {
   readonly #collection: MessageCollection
@@ -67,6 +69,20 @@ export class Message {
    */
   get author(): User | undefined {
     return this.#collection.client.users.get(this.message.authorId!)
+  }
+
+  /**
+   * Reactions
+   */
+  get reactions(): { [key: string]: StringArray } {
+    return this.#collection.getUnderlyingObject(this.id).reactions
+  }
+
+  /**
+   * Interactions
+   */
+  get interactions(): Interactions | undefined {
+    return this.#collection.getUnderlyingObject(this.id).interactions
   }
 
   /**

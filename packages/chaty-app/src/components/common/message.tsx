@@ -12,7 +12,7 @@ import { ObjString } from '@/types/shared'
 import { SystemMessage, SystemMessageIcon } from '../messaging'
 import { MessageEdit } from './message-edit'
 import { Markdown } from '../markdown'
-import { Attachment, Embed } from '../messaging/elements'
+import { Attachment, Embed, Reactions } from '../messaging/elements'
 
 /**
  * Regex for matching URLs
@@ -193,6 +193,16 @@ export function Message({ tr, highlight, tail, editing, message, isLink }: Props
       {message.embeds.map((embed) => (
         <Embed embed={embed} tr={tr} />
       ))}
+      <Reactions
+        reactions={message.username as never as Map<string, Set<string>>}
+        interactions={message.interactions}
+        userId={client.user?.id}
+        addReaction={() => { }}
+        removeReaction={() => { }}
+        sendGIF={(content) => {
+          /* TODO: handle sent gif: sendMessage({ content, replies: [{ id: message.id, mention: true }] }) */
+        }}
+      />
     </MessageContainer>
   )
 }
