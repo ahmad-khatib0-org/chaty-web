@@ -7,6 +7,7 @@ import type {
 import { ChannelCollection } from '../collections'
 import type { User } from './user'
 import type { Server } from './server'
+import { decodeTime } from 'ulid'
 
 export enum ChannelType {
   Text = 'text',
@@ -114,5 +115,26 @@ export class Channel {
     return this.type === ChannelType.DirectMessage
       ? this.recipients?.find((user) => user?.id !== this.#collection.client.user!.id)
       : undefined
+  }
+
+  /**
+   * Time when the channel was last updated (either created or a message was sent)
+   */
+  get updatedAt(): Date {
+    return this.lastMessageAt ?? this.createdAt
+  }
+
+  /**
+   * Time when this server was created
+   */
+  get createdAt(): Date {
+    return new Date(decodeTime(this.id))
+  }
+
+  /**
+   * Time when the last message was sent
+   */
+  get lastMessageAt(): Date | undefined {
+    return this.lastMessageId ? new Date(decodeTime(this.lastMessageId)) : undefined
   }
 }

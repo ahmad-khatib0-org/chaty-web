@@ -5,10 +5,15 @@ import type { ChatyConfig } from '@chaty-app/proto/web-plain/service/v1/config'
 
 import { ConnectionState, EventClient, type EventClientOptions } from './events/event_client'
 import { handleEvent, type ProtocolV1 } from './events/v1'
-import { ChannelCollection, ServerCollection, UserCollection } from './collections'
+import {
+  ChannelCollection,
+  EmojiCollection,
+  ServerCollection,
+  UserCollection,
+  ServerMemberCollection,
+} from './collections'
 import { Message, User } from './models'
 import type { HydratedMessage } from './hydration'
-import { ServerMemberCollection } from './collections/server-member-collection'
 
 export type Session = { id: string; token: string; user_id: string } | string
 
@@ -87,6 +92,7 @@ export class Client {
   readonly users
   readonly serverMembers
   readonly channels
+  readonly emojis
 
   readonly options: ClientOptions
   readonly events: EventClient<1>
@@ -163,6 +169,7 @@ export class Client {
     this.users = new UserCollection(this)
     this.serverMembers = new ServerMemberCollection(this)
     this.channels = new ChannelCollection(this)
+    this.emojis = new EmojiCollection(this)
 
     this.#subscriptions.add(this.events.on.error.subscribe((err) => this.emit('error', err)))
     this.#subscriptions.add(

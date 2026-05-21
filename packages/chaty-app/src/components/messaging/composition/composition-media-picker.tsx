@@ -1,7 +1,9 @@
 import { useState, useEffect, ReactNode, createContext, useContext } from 'react'
 import { createPortal } from 'react-dom'
-
 import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/react'
+
+import { GifPicker } from './gif-picker'
+import { EmojiPicker } from './emoji-picker'
 
 interface Props {
   children: (triggerProps: {
@@ -110,7 +112,6 @@ function Picker({
           </div>
         </div>
 
-        {/*  TODO: add the pickers*/}
         <div className='flex-1 min-h-0 overflow-auto px-2'>
           {show === 'gif' ? (
             <GifPicker />

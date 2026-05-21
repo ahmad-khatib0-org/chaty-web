@@ -1,4 +1,5 @@
 import { type ServerCollection } from '../collections'
+import type { Emoji } from './emoji'
 import type { File } from './file'
 import type { ServerMember } from './server-member'
 import type { ServerRole } from './server-role'
@@ -76,5 +77,14 @@ export class Server {
    */
   get name(): string {
     return this.#collection.getUnderlyingObject(this.id).name
+  }
+
+  /**
+   * All emojis tied to this server
+   */
+  get emojis(): Emoji[] {
+    return this.#collection.client.emojis.filter(
+      (emoji) => emoji.parent?.server !== undefined && emoji.parent.server.id === this.id
+    )
   }
 }

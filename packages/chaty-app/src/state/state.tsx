@@ -1,6 +1,15 @@
 import 'client-only'
-import { useAppStore, useAuthStore, useDraftsStore, useGroupsStore, useLinkSafetyStore } from '@/state'
 import { createContext, ReactNode, useEffect, useState } from 'react'
+
+import {
+  useAppStore,
+  useAuthStore,
+  useDraftsStore,
+  useGroupsStore,
+  useLinkSafetyStore,
+  useOrderingStore,
+  useSettingsStore,
+} from '@/state'
 
 export const useStore = {
   app: useAppStore,
@@ -8,6 +17,8 @@ export const useStore = {
   auth: useAuthStore,
   drafts: useDraftsStore,
   linkSafety: useLinkSafetyStore,
+  ordering: useOrderingStore,
+  settings: useSettingsStore,
 }
 
 export type StoreType = typeof useStore

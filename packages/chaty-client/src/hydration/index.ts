@@ -5,6 +5,7 @@ export * from './server-member'
 export * from './message'
 export * from './channel'
 export * from './user'
+export * from './emoji'
 
 /**
  * Functions to map from one object to another
