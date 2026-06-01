@@ -1,4 +1,10 @@
 import { botHydration } from './bot'
+import { channelHydration } from './channel'
+import { emojiHydration } from './emoji'
+import { messageHydration } from './message'
+import { serverHydration } from './server'
+import { serverMemberHydration } from './server-member'
+import { userHydration } from './user'
 
 export * from './server'
 export * from './server-member'
@@ -109,6 +115,12 @@ function hydrateInternal<Input extends object, Output>(
 
 export const hydrators = {
   bot: botHydration,
+  message: messageHydration,
+  emoji: emojiHydration,
+  channel: channelHydration,
+  server: serverHydration,
+  serverMember: serverMemberHydration,
+  user: userHydration,
 }
 
 export type Hydrators = typeof hydrators

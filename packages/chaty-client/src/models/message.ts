@@ -3,6 +3,7 @@ import {
   Masquerade,
   MessageWebhook as MessageWebhookAPI,
 } from '@chaty-app/proto/web-plain/service/v1/messages_db'
+import type { StringArray } from '@chaty-app/proto/web-plain/shared/v1/types'
 
 import type { MessageCollection } from '../collections'
 import { MessageFlags, type HydratedMessage } from '../hydration'
@@ -15,7 +16,6 @@ import type { Client } from '../client'
 import type { Server } from './server'
 import type { ServerRole } from './server-role'
 import type { File } from './file'
-import type { StringArray } from '@chaty-app/proto/web-plain/shared/v1/types'
 
 export class Message {
   readonly #collection: MessageCollection
@@ -34,14 +34,14 @@ export class Message {
     return this.message.channelId
   }
 
-  get createdAt(): number {
-    return Number(this.message.createdAt)
+  get createdAt(): BigInt {
+    return this.message.createdAt
   }
 
   /**
    * Time at which this message was edited
    */
-  get editedAt(): number | undefined {
+  get editedAt(): BigInt | undefined {
     return this.message.editedAt
   }
 

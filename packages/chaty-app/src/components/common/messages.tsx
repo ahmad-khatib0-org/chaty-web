@@ -1,6 +1,7 @@
 import { ReactNode, RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import deepEqual from 'fast-deep-equal'
 
+import { MessageSort } from '@chaty-app/proto/web/service/v1/messages_pb'
 import { Channel, Message as MessageType } from 'chaty-client/models'
 
 import { useMessageCache } from './messages-cache'
@@ -11,6 +12,7 @@ import { ConversationStart } from './conversation-start'
 import { ObjString } from '@/types/shared'
 import { Message } from './message'
 import { JumpToBottom, MessageBlocked, MessageDivider } from '../messaging'
+import { grpcClient } from '@/lib/client'
 
 const DEFAULT_FETCH_LIMIT = 50
 
@@ -182,7 +184,7 @@ function Messages({
    * Initial load subroutine
    * @param nearby Message we should load around (and then scroll to)
    */
-  function caseInitialLoad(nearby?: string) {
+  async function caseInitialLoad(nearby?: string) {
     preempt()
     setFetching('initial')
 
@@ -194,76 +196,78 @@ function Messages({
 
     collectedMessages = []
 
-    try {
-      let messages: MessageType[]
-      const existingState = cache?.unmanage(channel)
-      const useExistingState = existingState && !nearby
+    let messages: MessageType[] = []
+    const existingState = cache?.unmanage(channel)
+    const useExistingState = existingState && !nearby
 
-      if (useExistingState) {
-        messages = existingState.messages
-      } else {
-        // TODO: fetch the messages here
-        messages = []
-      }
+    if (useExistingState) {
+      messages = existingState.messages
+    } else {
+      const res = (
+        await grpcClient().messagesGet({ limit: fetchLimit ? BigInt(fetchLimit) : undefined, nearby })
+      ).response
 
-      // Cancel if we've been pre-empted
-      if (preempted()) return
+      if (res.case === 'data') {
+        messages = res.value.messages.map((msg) => client.messages.getOrCreate(msg.id, msg))
+      } else if (res.case === 'error') {
+        setFailure(true)
+      }
+    }
 
-      // Assume we are not at the end if we jumped to a message
-      // NB. We set this late to not display the "jump to bottom" bar
-      if (typeof nearby === 'string') {
-        // If the messages fetched include the latest message,
-        // then we are at the end and mark the channel as such.
-        setAtEnd(messages.findIndex((msg) => msg.id === channel.lastMessageId) !== -1)
-      }
-      // Check if we're at the start of the conversation otherwise
-      else if (!useExistingState && messages.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) {
-        setAtStart(true)
-      }
-      // Apply existing state if present
-      else if (useExistingState) {
-        setAtStart(existingState.atStart)
-        setAtEnd(existingState.atEnd)
-      }
+    // Cancel if we've been pre-empted
+    if (preempted()) return
 
-      // Merge list with any new ones that have come in if we are at the end
-      // this is necessary to prevent Duplicate messages, Break React's key-based rendering ...
-      if (atEnd) {
-        const knownIDs = new Set(collectedMessages.map((msg) => msg.id))
-        setMessagesSafely(
-          collectedMessages,
-          messages.filter((msg) => !knownIDs.has(msg.id))
-        )
-      }
-      // Otherwise just replace the whole list
-      else setMessages(messages)
+    // Assume we are not at the end if we jumped to a message
+    // NB. We set this late to not display the "jump to bottom" bar
+    if (typeof nearby === 'string') {
+      // If the messages fetched include the latest message,
+      // then we are at the end and mark the channel as such.
+      setAtEnd(messages.findIndex((msg) => msg.id === channel.lastMessageId) !== -1)
+    }
+    // Check if we're at the start of the conversation otherwise
+    else if (!useExistingState && messages.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) {
+      setAtStart(true)
+    }
+    // Apply existing state if present
+    else if (useExistingState) {
+      setAtStart(existingState.atStart)
+      setAtEnd(existingState.atEnd)
+    }
 
-      // Stop collecting messages
-      collectedMessages = []
+    // Merge list with any new ones that have come in if we are at the end
+    // this is necessary to prevent Duplicate messages, Break React's key-based rendering ...
+    if (atEnd) {
+      const knownIDs = new Set(collectedMessages.map((msg) => msg.id))
+      setMessagesSafely(
+        collectedMessages,
+        messages.filter((msg) => !knownIDs.has(msg.id))
+      )
+    }
+    // Otherwise just replace the whole list
+    else setMessages(messages)
 
-      // Mark as fetching has ended
-      setFetching(undefined)
+    // Stop collecting messages
+    collectedMessages = []
 
-      // If we're not at the end, restore scroll position
-      if (existingState && !existingState.atEnd) {
-        // The setTimeout (even with 0ms delay) ensures the scroll happens after:
-        // React has updated the DOM
-        // The browser has rendered new messages
-        // The list height has been recalculated
-        setTimeout(() => listRef.current?.scrollTo({ top: existingState.scrollTop, behavior: 'instant' }))
-      }
-      // Or... Reset scroll to the end
-      else if (atEnd) {
-        setTimeout(() =>
-          listRef.current?.scrollTo({
-            top: 9999999,
-            behavior: 'instant',
-          })
-        )
-      }
-    } catch (err) {
-      // Keep track of any failures (and allow retry / other actions)
-      setFailure(true)
+    // Mark as fetching has ended
+    setFetching(undefined)
+
+    // If we're not at the end, restore scroll position
+    if (existingState && !existingState.atEnd) {
+      // The setTimeout (even with 0ms delay) ensures the scroll happens after:
+      // React has updated the DOM
+      // The browser has rendered new messages
+      // The list height has been recalculated
+      setTimeout(() => listRef.current?.scrollTo({ top: existingState.scrollTop, behavior: 'instant' }))
+    }
+    // Or... Reset scroll to the end
+    else if (atEnd) {
+      setTimeout(() =>
+        listRef.current?.scrollTo({
+          top: 9999999,
+          behavior: 'instant',
+        })
+      )
     }
   }
 
@@ -276,42 +280,55 @@ function Messages({
     setFetching('upwards')
     const preempted = newPreempted()
 
-    try {
-      const res: MessageType[] = []
-      if (preempted()) return
+    const { response } = await grpcClient().messagesGet({
+      limit: fetchLimit ? BigInt(fetchLimit) : undefined,
+      before: messages.slice(-1)[0].id,
+    })
 
-      // If it's less than we expected, we are at the start
-      if (res.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) {
-        setAtStart(true)
-      }
-
-      if (res.length) {
-        // Calculate how much we need to cut off the other end
-        const tooManyBy = Math.max(0, res.length + messages.length - (limit ?? 0))
-
-        // If it's at least one element, we are no longer at the end
-        if (tooManyBy > 0) setAtEnd(false)
-
-        // Append messages to the top
-
-        setMessagesSafely(messages, res)
-
-        // If we removed any messages, guard the scroll position as we remove them
-        if (tooManyBy) {
-          // Example:
-          // Before: [#1, #2, #3, ..., #20]  (20 messages)
-          // Fetch 10 older messages: [-10, -9, ..., -1, #1, #2, ..., #20]  (30 total)
-          // Too many by: 30 - 20 = 10 messages
-          // Trim from bottom: keep [-10,..., #10]  (remove #11- #20)
-          // Result: Still 20 messages in memory
-          //
-          reposition(() => setMessages((prev) => prev.slice(tooManyBy)))
-          setFetching(undefined)
-        } else setFetching(undefined)
-      } else setFetching(undefined)
-    } catch (err) {
-      // Keep track of any failures (and allow retry / other actions)
+    let res: MessageType[] = []
+    if (response.case === 'error') {
       setFailure(true)
+      return
+    }
+
+    if (response.case === 'data') {
+      res = response.value.messages.map((msg) => client.messages.getOrCreate(msg.id, msg))
+    }
+
+    if (preempted()) return
+
+    // If it's less than we expected, we are at the start
+    if (res.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) {
+      setAtStart(true)
+    }
+
+    if (res.length) {
+      // Calculate how much we need to cut off the other end
+      const tooManyBy = Math.max(0, res.length + messages.length - (limit ?? 0))
+
+      // If it's at least one element, we are no longer at the end
+      if (tooManyBy > 0) setAtEnd(false)
+
+      // Append messages to the top
+
+      setMessagesSafely(messages, res)
+
+      // If we removed any messages, guard the scroll position as we remove them
+      if (tooManyBy) {
+        // Example:
+        // Before: [#1, #2, #3, ..., #20]  (20 messages)
+        // Fetch 10 older messages: [-10, -9, ..., -1, #1, #2, ..., #20]  (30 total)
+        // Too many by: 30 - 20 = 10 messages
+        // Trim from bottom: keep [-10,..., #10]  (remove #11- #20)
+        // Result: Still 20 messages in memory
+        //
+        reposition(() => setMessages((prev) => prev.slice(tooManyBy)))
+        setFetching(undefined)
+      } else {
+        setFetching(undefined)
+      }
+    } else {
+      setFetching(undefined)
     }
   }
 
@@ -328,40 +345,50 @@ function Messages({
     setFetching('downwards')
     const preempted = newPreempted()
 
-    try {
-      const result: MessageType[] = []
-      if (preempted()) return
+    let result: MessageType[] = []
+    const { response } = await grpcClient().messagesGet({
+      limit: fetchLimit ? BigInt(fetchLimit) : undefined,
+      after: messages[0].id,
+      sort: MessageSort.OLDEST,
+    })
 
-      // If it's less than we expected, we are at the end
-      if (result.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) setAtEnd(true)
+    if (response.case === 'error') {
+      setFailure(true)
+      return
+    }
+    if (response.case === 'data') {
+      result = response.value.messages.map((msg) => client.messages.getOrCreate(msg.id, msg))
+    }
 
-      if (result.length) {
-        // Calculate how much we need to cut off the other end
-        const tooManyBy = Math.max(0, result.length + messages.length - (limit ?? 0))
+    if (preempted()) return
 
-        // If it's at least one element, we are no longer at the start
-        if (tooManyBy > 0) setAtStart(false)
+    // If it's less than we expected, we are at the end
+    if (result.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) setAtEnd(true)
 
-        // Append messages to the bottom
-        setMessages((prev) => [...prev.reverse(), ...result])
+    if (result.length) {
+      // Calculate how much we need to cut off the other end
+      const tooManyBy = Math.max(0, result.length + messages.length - (limit ?? 0))
 
-        // If we removed any messages, guard the scroll position as we remove them
-        if (tooManyBy) {
-          // Example:
-          // Before: [#1, #2, #3, ..., #20]  (20 messages)
-          // Fetch 10 newer messages: [#1,..., #20, #21, #22]  (30 total)
-          // Too many by: 30 - 20 = 10 messages
-          // Trim from top: keep [#11,..., #22]  (remove #1 - #10)
-          // Result: Still 20 messages in memory
-          reposition(() => setMessages((prev) => prev.slice(0, -tooManyBy)))
-        } else {
-          setFetching(undefined)
-        }
+      // If it's at least one element, we are no longer at the start
+      if (tooManyBy > 0) setAtStart(false)
+
+      // Append messages to the bottom
+      setMessages((prev) => [...prev.reverse(), ...result])
+
+      // If we removed any messages, guard the scroll position as we remove them
+      if (tooManyBy) {
+        // Example:
+        // Before: [#1, #2, #3, ..., #20]  (20 messages)
+        // Fetch 10 newer messages: [#1,..., #20, #21, #22]  (30 total)
+        // Too many by: 30 - 20 = 10 messages
+        // Trim from top: keep [#11,..., #22]  (remove #1 - #10)
+        // Result: Still 20 messages in memory
+        reposition(() => setMessages((prev) => prev.slice(0, -tooManyBy)))
       } else {
         setFetching(undefined)
       }
-    } catch (err) {
-      setFailure(true)
+    } else {
+      setFetching(undefined)
     }
   }
 
@@ -391,38 +418,46 @@ function Messages({
       const preempted = newPreempted()
       collectedMessages = []
 
-      try {
-        const result: MessageType[] = []
-        if (preempted()) return
+      let result: MessageType[] = []
+      let { response } = await grpcClient().messagesGet({
+        limit: fetchLimit ? BigInt(fetchLimit) : undefined,
+      })
 
-        // Check if we're at the start of the conversation
-        // NB. This may be counter-intuitive because we are in history but,
-        //     this could be a very rare edge case for large moderation actions
-        if (result.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) setAtStart(true)
-        else setAtStart(false)
+      if (response.case === 'error') {
+        setFailure(true)
+        return
+      }
+      if (response.case === 'data') {
+        result = response.value.messages.map((msg) => client.messages.getOrCreate(msg.id, msg))
+      }
 
-        setAtEnd(true)
-        // Merge list with any new ones that have come in
-        const knownIds = new Set(collectedMessages!.map((x) => x.id))
-        setMessagesSafely(
-          collectedMessages!,
-          messages.filter((x) => !knownIds.has(x.id))
-        )
+      if (preempted()) return
 
-        collectedMessages = []
+      // Check if we're at the start of the conversation
+      // NB. This may be counter-intuitive because we are in history but,
+      //     this could be a very rare edge case for large moderation actions
+      if (result.length < (fetchLimit ?? DEFAULT_FETCH_LIMIT)) setAtStart(true)
+      else setAtStart(false)
+
+      setAtEnd(true)
+      // Merge list with any new ones that have come in
+      const knownIds = new Set(collectedMessages!.map((x) => x.id))
+      setMessagesSafely(
+        collectedMessages!,
+        messages.filter((x) => !knownIds.has(x.id))
+      )
+
+      collectedMessages = []
+
+      setTimeout(() => {
+        const containerChild = findScrollContainer(listRef!)?.children[0]
+        containerChild?.scrollIntoView({ behavior: 'instant', block: 'start' })
 
         setTimeout(() => {
-          const containerChild = findScrollContainer(listRef!)?.children[0]
-          containerChild!.scrollIntoView({ behavior: 'instant', block: 'start' })
-
-          setTimeout(() => {
-            containerChild!.scrollIntoView({ behavior: 'smooth', block: 'end' })
-            setFetching(undefined)
-          })
+          containerChild?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+          setFetching(undefined)
         })
-      } catch (err) {
-        setFailure(true)
-      }
+      })
     }
   }
 
@@ -452,22 +487,30 @@ function Messages({
 
     const preempted = newPreempted()
 
-    try {
-      const result: MessageType[] = []
-      if (preempted()) return
+    const { response } = (await grpcClient().messagesGet({ limit: fetchLimit ? BigInt(fetchLimit) : undefined, nearby: messageId }))
+    let result: MessageType[] = []
 
-      setAtStart(false)
-      setAtEnd(false)
-
-      setMessagesSafely(result)
-
-      setTimeout(() => {
-        scrollToNearestMessage()
-        setFetching(undefined)
-      })
-    } catch (err) {
+    if (response.case === 'error') {
       setFailure(true)
+      return
     }
+
+    if (response.case === 'data') {
+      result = response.value.messages.map((msg) => client.messages.getOrCreate(msg.id, msg))
+    }
+
+    if (preempted()) return
+
+    setAtStart(false)
+    setAtEnd(false)
+
+    setMessagesSafely(result)
+
+    setTimeout(() => {
+      scrollToNearestMessage()
+      setFetching(undefined)
+    })
+
   }
 
   function messagesWithTail(): ListEntry[] {
@@ -493,8 +536,8 @@ function Messages({
         // If there is a next message, compare it to the current message
         let date = null
         if (next) {
-          const adate = new Date(msg.createdAt),
-            bdate = new Date(next.createdAt),
+          const adate = new Date(Number(msg.createdAt)),
+            bdate = new Date(Number(next.createdAt)),
             atime = +adate,
             btime = +bdate
 
@@ -620,7 +663,7 @@ function Messages({
       // check if last message is authored by us
       lastMessage.message.author?.self &&
       // split up chains that are too far apart
-      Math.abs(+new Date() - lastMessage.message.createdAt) < 420000
+      Math.abs(+new Date() - Number(lastMessage.message.createdAt)) < 420000
       ? true
       : false
   }
@@ -645,6 +688,7 @@ function Messages({
       <>
         {entry.t === 0 && (
           <Message
+            tr={tr}
             message={entry.message}
             highlight={entry.message.id === highlightedMessageId}
             editing={entry.message.id === editingMessageId}></Message>

@@ -2,10 +2,11 @@
 import { useEffect, useState } from 'react'
 import { Loader } from '@mantine/core'
 
-import { useAppStore } from '@/state'
+import { StateProvider, useAppStore } from '@/state'
 import { trackClient } from '@/lib/client'
 
 type Props = {
+  children: React.ReactNode
   clientInfo: {
     languageSymbol: string
     languageName: string
@@ -14,10 +15,10 @@ type Props = {
   }
 }
 
-function ClientWrapper({ clientInfo }: Props) {
+function ClientWrapper({ clientInfo, children }: Props) {
   const setClientInfo = useAppStore((state) => state.setClientInfo)
   const setClientEssentialInfo = useAppStore((state) => state.setClientEssentialInfo)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const init = async () => {
     if (loading) return
@@ -39,7 +40,8 @@ function ClientWrapper({ clientInfo }: Props) {
   }, [])
 
   if (loading) return <Loader />
-  return null
+
+  return <StateProvider>{children}</StateProvider>
 }
 
 export default ClientWrapper

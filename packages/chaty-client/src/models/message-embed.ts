@@ -13,7 +13,6 @@ import {
   type EmbedVideo,
   type EmbedWebsiteMetadata,
   type EmbedYouTube,
-  type ImageSize,
   type LightspeedType,
 } from '@chaty-app/proto/web-plain/service/v1/messages_db'
 
@@ -74,7 +73,7 @@ export class ImageEmbed extends MessageEmbed {
     return this.embed.height
   }
 
-  get size(): ImageSize {
+  get size(): string {
     return this.embed.size
   }
 
@@ -471,26 +470,25 @@ export class TextEmbed extends MessageEmbed {
   }
 }
 
-function twitchTypeToString(type: TwitchType): string {
-  switch (type) {
-    case TwitchType.TWITCH_CHANNEL:
-      return 'channel'
-    case TwitchType.TWITCH_VIDEO:
-      return 'video'
-    case TwitchType.TWITCH_CLIP:
-      return 'clip'
-    default:
-      return 'channel'
+function twitchTypeToString(twitch?: TwitchType): string {
+  if (!twitch) return 'channel'
+
+  if (twitch.channel) {
+    return 'channel'
+  } else if (twitch.clip) {
+    return 'clip'
+  } else if (twitch.video) {
+    return 'video'
   }
+
+  return 'channel'
 }
 
-function bandcampTypeToString(type: BandcampType): string {
-  switch (type) {
-    case BandcampType.BANDCAMP_ALBUM:
-      return 'album'
-    case BandcampType.BANDCAMP_TRACK:
-      return 'track'
-    default:
-      return 'album'
-  }
+function bandcampTypeToString(type?: BandcampType): string {
+  if (!type) return 'album'
+
+  if (type.album) return 'album'
+  else if (type.track) return 'album'
+
+  return 'album'
 }

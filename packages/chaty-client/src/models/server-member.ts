@@ -87,7 +87,21 @@ export class ServerMember {
   get orderedRoles(): (Partial<Omit<Role, 'permissions'> & { permissions: { a: bigint; d: bigint } }> & {
     id: string
   })[] {
-    return this.roles.map((id) => ({ id, ...this.server!.roles[id] })).sort((a, b) => b.rank! - a.rank!) ?? []
+    return (
+      this.roles
+        .map((id) => {
+          const role = this.server?.roles[id]
+          const result: any = { id, ...role }
+
+          // Only add rank if it exists (don't add undefined)
+          if (role?.rank !== undefined) {
+            result.rank = BigInt(role.rank)
+          }
+
+          return result
+        })
+        .sort((a, b) => (b.rank ?? 0n) - (a.rank ?? 0n)) ?? []
+    )
   }
 
   /**

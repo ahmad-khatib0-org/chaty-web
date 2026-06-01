@@ -11,6 +11,7 @@ import {
   ServerCollection,
   UserCollection,
   ServerMemberCollection,
+  MessageCollection,
 } from './collections'
 import { Message, User } from './models'
 import type { HydratedMessage } from './hydration'
@@ -93,6 +94,7 @@ export class Client {
   readonly serverMembers
   readonly channels
   readonly emojis
+  readonly messages
 
   readonly options: ClientOptions
   readonly events: EventClient<1>
@@ -170,6 +172,7 @@ export class Client {
     this.serverMembers = new ServerMemberCollection(this)
     this.channels = new ChannelCollection(this)
     this.emojis = new EmojiCollection(this)
+    this.messages = new MessageCollection(this)
 
     this.#subscriptions.add(this.events.on.error.subscribe((err) => this.emit('error', err)))
     this.#subscriptions.add(
@@ -217,9 +220,9 @@ export class Client {
   }
 
   /**
-   * Emit an event (internal use)
+   * Emit an event
    */
-  private emit<K extends keyof Events>(event: K, data?: Events[K]): void {
+  emit<K extends keyof Events>(event: K, data?: Events[K]): void {
     const subject = this.#events.get(event)
     if (subject) subject.next(data)
   }

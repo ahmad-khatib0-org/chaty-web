@@ -26,6 +26,7 @@ export const userHydration: Hydrate<APIUser, HydratedUser> = {
     suspendedUntil: (user) => user.suspendedUntil,
     avatar: (user, ctx) => new File(ctx as Client, user.avatar ?? File.getDefaultAPIFile()),
     bot: (user) => user.bot!,
+    online: (user) => user.online,
     verified: (user) => user.verified,
     createdAt: (user) => user.createdAt,
     updatedAt: (user) => user.updatedAt,

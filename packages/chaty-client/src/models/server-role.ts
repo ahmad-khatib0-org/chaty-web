@@ -14,7 +14,7 @@ export class ServerRole {
   }
   readonly colour: string | undefined
   readonly hoist: boolean
-  readonly rank: number
+  readonly rank: bigint
 
   /**
    * Construct server role

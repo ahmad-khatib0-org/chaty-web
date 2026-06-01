@@ -19,9 +19,10 @@ async function ServerWrapper({ children }: Props) {
       </head>
       <body suppressHydrationWarning={true}>
         <MantineProvider>
-          {children}
+          <ClientWrapper clientInfo={{ languageSymbol, languageName, currency, country: location }}>
+            {children}
+          </ClientWrapper>
           <Notifications />
-          <ClientWrapper clientInfo={{ languageSymbol, languageName, currency, country: location }} />
         </MantineProvider>
       </body>
     </html>

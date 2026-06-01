@@ -1,9 +1,9 @@
 import { ReactNode } from 'react'
+import { Tooltip } from '@mantine/core'
 
 import { Message } from 'chaty-client/models'
 import { MessageToolbar } from '../messaging'
 import { OverflowingText, Ripple } from '../ui'
-import { Tooltip } from '@mantine/core'
 
 interface Props {
   /**

@@ -45,7 +45,7 @@ export class File {
     this.tag = this.#file.bucket
     this.filename = this.#file.filename
     this.contentType = this.#file.contentType
-    this.size = this.#file.size
+    this.size = Number(this.#file.size)
     this.metadata = this.#file.metadata
     this.isSpoiler = this.#file.isSpoiler
   }
@@ -71,8 +71,8 @@ export class File {
       filename: '',
       hash: '',
       id: '',
-      size: 0,
-      uploadedAt: 0,
+      size: BigInt(0),
+      uploadedAt: BigInt(0),
       uploaderId: '',
       isSpoiler: false,
     }
