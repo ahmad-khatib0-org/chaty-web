@@ -68,4 +68,12 @@ export class ObjectStorage<T> {
       this.set(id, hydrate(type, data as never, context, true) as T)
     }
   }
+
+  update(key: string, partial: Partial<T>): void {
+    if (this.store[key]) {
+      const current = this.store[key].value
+      const updated = { ...current, ...partial } as T
+      this.store[key].next(updated)
+    }
+  }
 }

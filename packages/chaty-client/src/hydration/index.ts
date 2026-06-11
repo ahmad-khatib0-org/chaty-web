@@ -1,5 +1,6 @@
 import { botHydration } from './bot'
 import { channelHydration } from './channel'
+import { channelUnreadHydration } from './channel-unread'
 import { emojiHydration } from './emoji'
 import { messageHydration } from './message'
 import { serverHydration } from './server'
@@ -10,6 +11,7 @@ export * from './server'
 export * from './server-member'
 export * from './message'
 export * from './channel'
+export * from './channel-unread'
 export * from './user'
 export * from './emoji'
 
@@ -118,6 +120,7 @@ export const hydrators = {
   message: messageHydration,
   emoji: emojiHydration,
   channel: channelHydration,
+  channelUnread: channelUnreadHydration,
   server: serverHydration,
   serverMember: serverMemberHydration,
   user: userHydration,

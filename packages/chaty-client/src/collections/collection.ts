@@ -116,12 +116,12 @@ export abstract class StoreCollection<T, V> extends Collection<T> {
   #collectionSubject = new BehaviorSubject<Map<string, T>>(new Map())
 
   readonly getUnderlyingObject: (id: string) => V
-  readonly updateUnderlyingObject: (key: string, value: V | undefined) => void
+  readonly updateUnderlyingObject: (key: string, partial: Partial<V>) => void
 
   constructor() {
     super()
     this.getUnderlyingObject = (key) => this.#storage.get(key) ?? ({} as V)
-    this.updateUnderlyingObject = (key, value) => this.#storage.set(key, value)
+    this.updateUnderlyingObject = (key, partial) => this.#storage.update(key, partial)
   }
 
   /**

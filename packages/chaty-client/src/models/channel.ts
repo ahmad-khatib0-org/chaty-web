@@ -1,3 +1,5 @@
+import { decodeTime, ulid } from 'ulid'
+
 import type {
   ChannelDirectMessage,
   ChannelGroup,
@@ -7,7 +9,7 @@ import type {
 import { ChannelCollection } from '../collections'
 import type { User } from './user'
 import type { Server } from './server'
-import { decodeTime } from 'ulid'
+import type { Message } from './message'
 
 export enum ChannelType {
   Text = 'text',
@@ -36,6 +38,10 @@ export class Channel {
   readonly #collection: ChannelCollection
   readonly id: string
 
+  #ackTimeout?: number
+  #ackLimit?: number | undefined
+  #manuallyMarked?: boolean
+
   constructor(channel: ChannelCollection, id: string) {
     this.#collection = channel
     this.id = id
@@ -57,9 +63,9 @@ export class Channel {
    * ID of the last message sent in this channel
    */
   get lastMessageId(): string | undefined {
-    const group = this.#collection.getUnderlyingObject(this.id).group
-    const text = this.#collection.getUnderlyingObject(this.id).text
-    const direct = this.#collection.getUnderlyingObject(this.id).direct
+    const group = this.group
+    const text = this.text
+    const direct = this.direct
     return group ? group.lastMessageId : text ? text.lastMessageId : direct?.lastMessageId
   }
 
@@ -94,18 +100,14 @@ export class Channel {
    * Server this channel is in
    */
   get server(): Server | undefined {
-    return this.#collection.client.servers.get(
-      this.#collection.getUnderlyingObject(this.id).text?.serverId ?? ''
-    )
+    return this.#collection.client.servers.get(this.text?.serverId ?? '')
   }
 
   /**
    * Recipients of the group
    */
   get recipients(): User[] {
-    return [...(this.#collection.getUnderlyingObject(this.id).group?.recipients ?? []).values()].map(
-      (id) => this.#collection.client.users.get(id)!
-    )
+    return [...(this.group?.recipients ?? []).values()].map((id) => this.#collection.client.users.get(id)!)
   }
 
   /**
@@ -136,5 +138,84 @@ export class Channel {
    */
   get lastMessageAt(): Date | undefined {
     return this.lastMessageId ? new Date(decodeTime(this.lastMessageId)) : undefined
+  }
+
+  /**
+   * Whether this channel is marked as mature
+   */
+  get mature(): boolean {
+    return this.text?.nsfw ?? this.group?.nsfw ?? false
+  }
+
+  get name(): string {
+    return this.text ? this.text.name : this.group ? this.group.name : ''
+  }
+
+  /**
+   * Whether this channel is unread
+   */
+  get unread(): boolean {
+    if (!this.lastMessageId || this.saved || this.#collection.client.options.channelExclusiveMuted(this)) {
+      return false
+    }
+
+    const unread = this.#collection.client.channelUnreads.for(this)
+    return (
+      (unread.lastMessageId ?? '0').localeCompare(this.lastMessageId) === -1 ||
+      unread.messageMentionIds.size > 0
+    )
+  }
+
+  /**
+   * Mark a channel as read
+   * @param message Last read message or its ID
+   * @param skipRateLimiter Whether to skip the internal rate limiter
+   * @param skipRequest For internal updates only
+   * @param skipNextMarking For internal usage only
+   * @requires `SavedMessages`, `DirectMessage`, `Group`, `TextChannel`
+   */
+  async ack(
+    message?: Message | string,
+    skipRateLimiter?: boolean,
+    skipRequest?: boolean,
+    skipNextMarking?: boolean
+  ): Promise<void> {
+    if (!message && this.#manuallyMarked) {
+      this.#manuallyMarked = false
+      return
+    }
+    // Skip the next unread marking
+    else if (skipNextMarking) {
+      this.#manuallyMarked = true
+    }
+
+    const lastMsgId = (typeof message === 'string' ? message : message?.id) ?? this.lastMessageId ?? ulid()
+    const channelUnread = this.#collection.client.channelUnreads.for(this)
+
+    this.#collection.client.channelUnreads.updateUnderlyingObject(this.id, { lastMessageId: lastMsgId })
+    if (channelUnread.messageMentionIds.size) {
+      channelUnread.messageMentionIds.clear()
+    }
+
+    // Skip request if not needed
+    if (skipRequest) return
+
+    const performAck = (): void => {
+      this.#ackLimit = undefined
+      // TODO: send an rpc call to /channels/${this.id}/ack/${lastMessageId as ""}
+    }
+
+    if (skipRateLimiter) return performAck()
+
+    clearTimeout(this.#ackTimeout)
+    if (this.#ackLimit && +new Date() > this.#ackLimit) {
+      performAck()
+    }
+
+    this.#ackTimeout = setTimeout(performAck, 1500)
+
+    if (!this.#ackLimit) {
+      this.#ackLimit = +new Date() + 4e3
+    }
   }
 }

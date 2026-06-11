@@ -1,6 +1,5 @@
 import { BehaviorSubject, Observable, share, Subject, Subscription } from 'rxjs'
 
-import type { Channel } from '@chaty-app/proto/web-plain/service/v1/channels_db'
 import type { ChatyConfig } from '@chaty-app/proto/web-plain/service/v1/config'
 
 import { ConnectionState, EventClient, type EventClientOptions } from './events/event_client'
@@ -12,8 +11,9 @@ import {
   UserCollection,
   ServerMemberCollection,
   MessageCollection,
+  ChannelUnreadCollection,
 } from './collections'
-import { Message, User } from './models'
+import { Message, User, Channel } from './models'
 import type { HydratedMessage } from './hydration'
 
 export type Session = { id: string; token: string; user_id: string } | string
@@ -93,6 +93,7 @@ export class Client {
   readonly users
   readonly serverMembers
   readonly channels
+  readonly channelUnreads
   readonly emojis
   readonly messages
 
@@ -171,6 +172,7 @@ export class Client {
     this.users = new UserCollection(this)
     this.serverMembers = new ServerMemberCollection(this)
     this.channels = new ChannelCollection(this)
+    this.channelUnreads = new ChannelUnreadCollection(this)
     this.emojis = new EmojiCollection(this)
     this.messages = new MessageCollection(this)
 
