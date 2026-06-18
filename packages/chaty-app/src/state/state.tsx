@@ -6,6 +6,7 @@ import {
   useAuthStore,
   useDraftsStore,
   useGroupsStore,
+  useLayoutStore,
   useLinkSafetyStore,
   useOrderingStore,
   useSettingsStore,
@@ -19,6 +20,7 @@ export const useStore = {
   linkSafety: useLinkSafetyStore,
   ordering: useOrderingStore,
   settings: useSettingsStore,
+  layout: useLayoutStore,
 }
 
 export type StoreType = typeof useStore

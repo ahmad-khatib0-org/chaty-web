@@ -139,7 +139,7 @@ export class Message {
    * Roles this message mentions
    */
   get roleMentions(): ServerRole[] | undefined {
-    return this.roleMentionIds?.map((roleId) => this.server?.roles[roleId] as ServerRole)
+    return this.roleMentionIds?.map((roleId) => this.server?.roles.get(roleId) as ServerRole)
   }
 
   /**

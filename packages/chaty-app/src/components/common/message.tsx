@@ -35,12 +35,12 @@ interface Props {
   /**
    * Whether to highlight this message
    */
-  highlight: boolean
+  highlight?: boolean
 
   /**
    * Whether to replace content with editor
    */
-  editing: boolean
+  editing?: boolean
 
   /**
    * Whether this message is a link
@@ -97,8 +97,8 @@ export function Message({ tr, highlight, tail, editing, message, isLink }: Props
           <Avatar size={36} src={message.avatarURL} />
         </div>
       }
-      timestamp={message.createdAt}
-      edited={message.editedAt ? new Date(message.editedAt) : undefined}
+      timestamp={new Date(Number(message.createdAt))}
+      edited={message.editedAt ? new Date(Number(message.editedAt)) : undefined}
       mentioned={message.mentioned}
       highlight={highlight}
       editing={editing}
@@ -163,7 +163,7 @@ export function Message({ tr, highlight, tail, editing, message, isLink }: Props
         message.system && (
           <SystemMessageIcon
             systemMessage={message.system}
-            createdAt={message.createdAt}
+            createdAt={Number(message.createdAt)}
             isServer={!!message.server}
           />
         )

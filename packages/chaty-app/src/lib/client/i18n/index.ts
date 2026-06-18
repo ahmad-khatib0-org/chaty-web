@@ -27,4 +27,9 @@ export interface Translations {
   'form.fields.greater_than': string
   'form.fields.less_than': string
   'action.navigate.go_back_home_page': string
+
+  'chat.new_messages_since': string
+  'chat.typing.single': string
+  'chat.typing.multiple': string
+  'chat.typing.several': string
 }

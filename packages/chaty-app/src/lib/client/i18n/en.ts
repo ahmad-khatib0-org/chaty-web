@@ -29,4 +29,9 @@ export const TranslationsEN: Translations = {
   'form.fields.greater_than': 'Field must be greater than {{Max}}',
   'form.fields.less_than': 'Field must be less than {{Min}}',
   'action.navigate.go_back_home_page': 'Go back to home page',
+
+  'chat.new_messages_since': 'New messages since {{Time}}',
+  'chat.typing.single': '{{Username}} is typing…',
+  'chat.typing.multiple': '{{Names}} and {{Lastname}} are typing…',
+  'chat.typing.several': 'Several people are typing…',
 }

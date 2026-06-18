@@ -1,4 +1,5 @@
 import type { UserCollection } from '../collections'
+import { U32_MAX, UserPermission } from '../permissions'
 import type { File } from './file'
 
 export const RelationshipStatus = {
@@ -53,6 +54,10 @@ export class User {
     return this.#collection.client.user?.id === this.id
   }
 
+  get #user() {
+    return this.#collection.getUnderlyingObject(this.id)
+  }
+
   /**
    * Relationship with user
    */
@@ -64,28 +69,28 @@ export class User {
   }
 
   get username(): string {
-    return this.#collection.getUnderlyingObject(this.id).username
+    return this.#user.username
   }
 
   /**
    * Avatar
    */
   get avatar(): File | undefined {
-    return this.#collection.getUnderlyingObject(this.id).avatar
+    return this.#user.avatar
   }
 
   /**
    * Whether the user is privileged
    */
   get privileged(): boolean {
-    return this.#collection.getUnderlyingObject(this.id).privileged
+    return this.#user.privileged
   }
 
   /**
    * Bot information
    */
   get bot(): { owner: string } | undefined {
-    return this.#collection.getUnderlyingObject(this.id).bot
+    return this.#user.bot
   }
 
   /**
@@ -100,5 +105,68 @@ export class User {
    */
   get defaultAvatarURL(): string {
     return `${this.#collection.client.options.baseURL}/users/${this.id}/default_avatar`
+  }
+
+  /**
+   * Presence
+   */
+  get presence(): string {
+    return this.online ? (this.status?.presence ?? 'online') : 'invisible'
+  }
+
+  /**
+   * Whether the user is online
+   */
+  get online(): boolean {
+    return this.#user.online ?? false
+  }
+
+  /**
+   * Display Name
+   */
+  get displayName(): string {
+    return this.#user.displayName ?? this.#user.username
+  }
+
+  /**
+   * Permissions against this user
+   */
+  get permission(): number {
+    let permissions = 0
+    switch (this.relationship) {
+      case RelationshipStatus.Friend:
+      case RelationshipStatus.User:
+        return U32_MAX
+      case RelationshipStatus.Blocked:
+      case RelationshipStatus.BlockedOther:
+        return UserPermission.Access
+      case RelationshipStatus.Incoming:
+      case RelationshipStatus.Outgoing:
+        permissions = UserPermission.Access
+    }
+
+    if (
+      this.#collection.client.channels.find(
+        (chan) => (chan.group !== undefined || chan.direct !== undefined) && chan.recipientIds.has(this.id)
+      ) ||
+      this.#collection.client.serverMembers.find((member) => member.id.user === this.id)
+    ) {
+      if (this.#collection.client.user?.bot || this.bot) {
+        permissions |= UserPermission.SendMessage
+      }
+
+      permissions |= UserPermission.Access | UserPermission.ViewProfile
+    }
+
+    return permissions
+  }
+
+  /**
+   * User Status
+   */
+  get status(): { text?: string | undefined; presence?: string | undefined } | undefined {
+    // TODO: issue with API, upstream fix required #319
+    if (!this.online) return { text: undefined, presence: 'invisible' as const }
+    return { text: this.#user.statusText }
   }
 }

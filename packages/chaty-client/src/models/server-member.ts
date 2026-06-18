@@ -1,9 +1,12 @@
 import type { Role } from '@chaty-app/proto/web-plain/service/v1/roles_db'
 
 import type { ServerMemberCollection } from '../collections'
-import type { Server } from './server'
+import { Server } from './server'
 import type { User } from './user'
 import type { File } from './file'
+import { Channel } from './channel'
+import { Permission } from '../permissions'
+import { bitwiseAndEq, calculatePermission } from '../permissions/calculation'
 
 /**
  * Deterministic conversion of member composite key to string ID
@@ -51,6 +54,10 @@ export class ServerMember {
     return !this.#collection.getUnderlyingObject(key(this.id)).id
   }
 
+  get serverMember() {
+    return this.#collection.getUnderlyingObject(key(this.id))
+  }
+
   /**
    * Server this member belongs to
    */
@@ -69,7 +76,7 @@ export class ServerMember {
    * List of role IDs
    */
   get roles(): string[] {
-    return this.#collection.getUnderlyingObject(key(this.id)).roles
+    return this.serverMember.roles
   }
 
   /**
@@ -90,7 +97,7 @@ export class ServerMember {
     return (
       this.roles
         .map((id) => {
-          const role = this.server?.roles[id]
+          const role = this.server?.roles.get(id)
           const result: any = { id, ...role }
 
           // Only add rank if it exists (don't add undefined)
@@ -108,14 +115,21 @@ export class ServerMember {
    * Nickname
    */
   get nickname(): string | undefined {
-    return this.#collection.getUnderlyingObject(key(this.id)).nickname
+    return this.serverMember.nickname
   }
 
   /**
    * Avatar
    */
   get avatar(): File | undefined {
-    return this.#collection.getUnderlyingObject(key(this.id)).avatar
+    return this.serverMember.avatar
+  }
+
+  /**
+   * Time at which timeout expires
+   */
+  get timeout(): bigint | undefined {
+    return this.serverMember.timeout
   }
 
   /**
@@ -123,5 +137,24 @@ export class ServerMember {
    */
   get avatarURL(): string | undefined {
     return this.avatar?.createFileURL() ?? this.user?.avatarURL
+  }
+
+  /**
+   * Get the permissions that this member has against a certain object
+   * @param target Target object to check permissions against
+   * @returns Permissions that this member has
+   */
+  getPermissions(target: Server | Channel): bigint {
+    return calculatePermission(this.#collection.client, target, { member: this })
+  }
+
+  /**
+   * Check whether a member has a certain permission against a certain object
+   * @param target Target object to check permissions against
+   * @param permission Permission names to check for
+   * @returns Whether the member has this permission
+   */
+  hasPermission(target: Server | Channel, ...permission: (keyof typeof Permission)[]): boolean {
+    return bitwiseAndEq(this.getPermissions(target), ...permission.map((x) => Permission[x]))
   }
 }

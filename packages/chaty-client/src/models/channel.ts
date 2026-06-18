@@ -10,6 +10,8 @@ import { ChannelCollection } from '../collections'
 import type { User } from './user'
 import type { Server } from './server'
 import type { Message } from './message'
+import { Permission } from '../permissions'
+import { bitwiseAndEq, calculatePermission } from '../permissions/calculation'
 
 export enum ChannelType {
   Text = 'text',
@@ -104,10 +106,46 @@ export class Channel {
   }
 
   /**
+   * Default permissions for this server channel
+   */
+  get defaultPermissions(): { a: bigint; d: bigint } | undefined {
+    return this.text?.defaultPermissions
+  }
+
+  /**
    * Recipients of the group
    */
   get recipients(): User[] {
     return [...(this.group?.recipients ?? []).values()].map((id) => this.#collection.client.users.get(id)!)
+  }
+
+  /**
+   * User ids of recipients of the group
+   */
+  get recipientIds(): Set<string> {
+    return new Set(this.channel.group?.recipients ?? [])
+  }
+
+  /**
+   * Owner ID
+   */
+  get ownerId(): string {
+    const { group, server, saved } = this
+    return group ? group.userId : server ? server.ownerId : (saved?.userId ?? '')
+  }
+
+  /**
+   * Users currently trying in channel
+   */
+  get typing(): User[] {
+    return [...this.typingIds.values()].map((id) => this.#collection.client.users.get(id)!)
+  }
+
+  /**
+   * User ids of people currently typing in channel
+   */
+  get typingIds(): Set<string> {
+    return this.channel.typingIds
   }
 
   /**
@@ -152,6 +190,39 @@ export class Channel {
   }
 
   /**
+   * Role permissions for this server channel
+   */
+  get rolePermissions(): Record<string, { a: bigint; d: bigint }> | undefined {
+    return this.channel.text?.rolePermissions
+  }
+
+  /**
+   * Channel description
+   */
+  get description(): string | undefined {
+    const { text, group } = this
+    return text ? text.description : group ? group.description : undefined
+  }
+
+  /**
+   * Permission the currently authenticated user has against this channel
+   */
+  get permission(): bigint {
+    return calculatePermission(this.#collection.client, this)
+  }
+
+  get voiceMaxUsers(): number | undefined {
+    return this.channel.voiceMaxUsers
+  }
+
+  /**
+   * Permissions allowed for users in this group
+   */
+  get permissions(): bigint | undefined {
+    return this.group?.permissions
+  }
+
+  /**
    * Whether this channel is unread
    */
   get unread(): boolean {
@@ -163,6 +234,41 @@ export class Channel {
     return (
       (unread.lastMessageId ?? '0').localeCompare(this.lastMessageId) === -1 ||
       unread.messageMentionIds.size > 0
+    )
+  }
+
+  /**
+   * Check whether we have at least one of the given permissions in a channel
+   * @param permission Permission Names
+   * @returns Whether we have one of the permissions
+   */
+  orPermission(...permissions: (keyof typeof Permission)[]): boolean {
+    return permissions.findIndex((x) => bitwiseAndEq(this.permission, Permission[x])) !== -1
+  }
+
+  /**
+   * Whether this is a 'voice chats' channel
+   *
+   */
+  get isVoice(): boolean {
+    const { group, direct, voiceMaxUsers } = this
+    return group !== undefined || direct !== undefined || (voiceMaxUsers ?? 0) > 0
+  }
+
+  /**
+   * Whether this channel may be hidden to some users
+   */
+  get potentiallyRestrictedChannel(): boolean | string | undefined {
+    if (!this.serverId) return false
+
+    return (
+      bitwiseAndEq(this.defaultPermissions?.d ?? 0n, Permission.ViewChannel) ||
+      !bitwiseAndEq(this.server!.defaultPermissions, Permission.ViewChannel) ||
+      [...(this.server?.roles.keys() ?? [])].find(
+        (role) =>
+          bitwiseAndEq(this.rolePermissions?.[role]?.d ?? 0n, Permission.ViewChannel) ||
+          bitwiseAndEq(this.server?.roles.get(role)?.permissions.d ?? 0n, Permission.ViewChannel)
+      )
     )
   }
 
