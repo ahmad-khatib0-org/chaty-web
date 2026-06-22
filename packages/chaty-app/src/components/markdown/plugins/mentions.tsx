@@ -83,7 +83,7 @@ export const remarkMentions: Plugin = () => (tree) => {
   )
 }
 
-export const mentionHandler: Handler = (h, node) => {
+export const mentionHandler: Handler = (_h, node) => {
   return {
     type: 'element' as const,
     tagName: 'mention',

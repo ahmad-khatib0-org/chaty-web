@@ -1,6 +1,5 @@
 import Image from 'next/image'
 
-import { ImageSize } from '@chaty-app/proto/web-plain/service/v1/messages_db'
 import { TextEmbed, WebsiteEmbed } from 'chaty-client/models'
 
 import { OverflowingText, SizedContent } from '@/components/ui'
@@ -70,10 +69,10 @@ export function EmbedText({ embed, tr }: Props) {
                 />
               </SizedContent>
             )}
-            {embed.image?.size === ImageSize.LARGE && (
-              <SizedContent width={embed.image.width} height={embed.image.height}>
+            {embed.image?.size === 'large' && (
+              <SizedContent width={embed.image?.width ?? 0} height={embed.image?.height ?? 0}>
                 <Image
-                  src={embed.image.proxiedURL}
+                  src={embed.image?.proxiedURL ?? ''}
                   sizes='100%'
                   fill
                   loading='lazy'
@@ -89,9 +88,9 @@ export function EmbedText({ embed, tr }: Props) {
         )}
       </div>
 
-      {isWebsite && embed.image?.size === ImageSize.PREVIEW && !embed.video && (
+      {isWebsite && embed.image?.size === 'preview' && !embed.video && (
         <Image
-          src={embed.image.proxiedURL}
+          src={embed.image?.proxiedURL ?? ''}
           sizes='100%'
           fill
           loading='lazy'
