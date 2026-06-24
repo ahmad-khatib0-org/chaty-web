@@ -211,7 +211,7 @@ export interface DraftsState extends TypeDraft {
    * @param fileId File ID
    * @returns Cached File
    */
-  getFile: (fileId: string) => any
+  getFile: (fileId: string) => FileCacheEntry
 
   /**
    * Whether additional elements (attachment/reply) are present
@@ -525,7 +525,7 @@ const storeFn: StateCreator<DraftsState> = (set, get) => {
       }))
     },
 
-    getFile: (fileId: string) => {
+    getFile: (fileId: string): FileCacheEntry => {
       return fileCache[fileId]
     },
 

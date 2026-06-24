@@ -18,6 +18,7 @@ import { NewMessages } from '../messaging/new-messages'
 import Messages from './messages'
 import { TypingIndicator } from '../messaging/composition'
 import { MembersSidebar, MessageSearchSidebar } from '../messaging'
+import { MessagesDraft } from '../messaging/messages-draft'
 
 type Props = {
   tr: ObjString
@@ -151,7 +152,9 @@ export function Channel({ channel, tr }: Props) {
             channel={channel}
             limit={150}
             lastReadId={lastId}
-            pendingMessages={/* TODO: add draft messages */ undefined}
+            pendingMessages={(props) => (
+              <MessagesDraft tr={tr} tail={props.tail} sentIds={props.ids} channel={channel} />
+            )}
             typingIndicator={<TypingIndicator users={channel.typing} ownId={client.user?.id ?? ''} tr={tr} />}
             highlightedMessageId={highlightMessageId()}
             clearHighlightedMessage={() => router.back()}

@@ -18,6 +18,7 @@ async function ServerWrapper({ children }: Props) {
         <ColorSchemeScript />
       </head>
       <body suppressHydrationWarning={true}>
+        <div id='floating' />
         <MantineProvider>
           <ClientWrapper clientInfo={{ languageSymbol, languageName, currency, country: location }}>
             {children}
