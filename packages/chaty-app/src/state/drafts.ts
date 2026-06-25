@@ -254,6 +254,8 @@ export interface DraftsState extends TypeDraft {
    * @param id Message ID or true/undefined
    */
   setEditingMessageId: (id: string | true | undefined) => void
+
+  setNodeReplacement: (fn: (value: readonly [string | '_focus'] | undefined) => void) => void
 }
 
 const storeFn: StateCreator<DraftsState> = (set, get) => {
@@ -569,6 +571,10 @@ const storeFn: StateCreator<DraftsState> = (set, get) => {
 
     setEditingMessageId: (id: string | true | undefined) => {
       set({ editingMessageId: id })
+    },
+
+    setNodeReplacement: (fn: (value: readonly [string | '_focus'] | undefined) => void) => {
+      setNodeReplacement = fn
     },
   }
 }

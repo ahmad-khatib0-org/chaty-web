@@ -28,6 +28,8 @@ export interface Translations {
   'form.fields.less_than': string
   'action.navigate.go_back_home_page': string
 
+  'files.single_large_file.error': string
+  'files.multiple_large_files.error': string
   'chat.new_messages_since': string
   'chat.typing.single': string
   'chat.typing.multiple': string

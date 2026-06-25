@@ -4,6 +4,7 @@ import { Loader } from '@mantine/core'
 
 import { StateProvider, useAppStore } from '@/state'
 import { trackClient } from '@/lib/client'
+import { useClient } from '@/context/client'
 
 type Props = {
   children: React.ReactNode
@@ -16,11 +17,15 @@ type Props = {
 }
 
 function ClientWrapper({ clientInfo, children }: Props) {
-  const setClientInfo = useAppStore((state) => state.setClientInfo)
-  const setClientEssentialInfo = useAppStore((state) => state.setClientEssentialInfo)
+  const { setClientEssentialInfo, setClientInfo, setClientConnState } = useAppStore()
   const [loading, setLoading] = useState(true)
+  const client = useClient()
 
-  const init = async () => {
+  const initConnectionStateObservable = () => {
+    client.events.on.state.subscribe((state) => setClientConnState(state))
+  }
+
+  const initInfo = async () => {
     if (loading) return
     setLoading(true)
     setClientEssentialInfo(clientInfo)
@@ -36,7 +41,8 @@ function ClientWrapper({ clientInfo, children }: Props) {
   }
 
   useEffect(() => {
-    init()
+    initInfo()
+    initConnectionStateObservable()
   }, [])
 
   if (loading) return <Loader />

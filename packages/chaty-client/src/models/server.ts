@@ -1,4 +1,5 @@
 import { type ServerCollection } from '../collections'
+import type { Channel } from './channel'
 import type { Emoji } from './emoji'
 import type { File } from './file'
 import type { ServerMember } from './server-member'
@@ -93,6 +94,15 @@ export class Server {
    */
   get defaultPermissions(): bigint {
     return this.#server.defaultPermissions
+  }
+
+  /**
+   * Channels
+   */
+  get channels(): Channel[] {
+    return [...this.#collection.getUnderlyingObject(this.id).channels.values()]
+      .map((id) => this.#collection.client.channels.get(id)!)
+      .filter((x) => x)
   }
 
   /**

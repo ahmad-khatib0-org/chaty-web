@@ -6,10 +6,11 @@ import type {
   ChannelSavedMessages,
   ChannelText,
 } from '@chaty-app/proto/web-plain/service/v1/channels_db'
-import { ChannelCollection } from '../collections'
+import type { MessageIntent } from '@chaty-app/proto/web-plain/service/v1/messages'
+import { ChannelCollection, MessageCollection } from '../collections'
 import type { User } from './user'
 import type { Server } from './server'
-import type { Message } from './message'
+import { Message } from './message'
 import { Permission } from '../permissions'
 import { bitwiseAndEq, calculatePermission } from '../permissions/calculation'
 
@@ -323,5 +324,16 @@ export class Channel {
     if (!this.#ackLimit) {
       this.#ackLimit = +new Date() + 4e3
     }
+  }
+
+  /**
+   * Send a message
+   * @param data Either the message as a string or message sending route data
+   * @requires `saved`, `direct`, `group`, `text`
+   * @returns Sent message
+   */
+  // TODO: implement
+  async sendMessage(data: string | MessageIntent, idempotencyKey: string = ulid()): Promise<Message> {
+    return new Message(new MessageCollection(this.#collection.client), '')
   }
 }

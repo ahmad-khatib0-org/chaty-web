@@ -3,6 +3,7 @@ import { create, StateCreator } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 import { ClientEssentialInformation, ClientInformation, createDefaultClientInformation } from '@/types/client'
+import { ConnectionState } from 'chaty-client/events'
 
 interface AppState {
   clientInfo: ClientInformation & { email?: string }
@@ -10,6 +11,9 @@ interface AppState {
   clientEssentialInfo: { languageName: string; languageSymbol: string; currency: string; country: string }
   setClientEssentialInfo: (info: ClientEssentialInformation) => void
   updateClientInfo: (updates: Partial<ClientInformation> & { email?: string }) => void
+
+  clientConnState: ConnectionState
+  setClientConnState: (state: ConnectionState) => void
 }
 
 const storeFn: StateCreator<AppState> = (set) => ({
@@ -21,6 +25,8 @@ const storeFn: StateCreator<AppState> = (set) => ({
     set((state) => ({
       clientInfo: { ...state.clientInfo, ...updates },
     })),
+  clientConnState: ConnectionState.Disconnected,
+  setClientConnState: (clientConnState) => set({ clientConnState }),
 })
 
 export const useAppStore =

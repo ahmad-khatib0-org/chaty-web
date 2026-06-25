@@ -30,6 +30,8 @@ export const TranslationsEN: Translations = {
   'form.fields.less_than': 'Field must be less than {{Min}}',
   'action.navigate.go_back_home_page': 'Go back to home page',
 
+  'files.single_large_file.error': 'The file {{FileName}} exceeds the maximum size limit of {{Size}}',
+  'files.multiple_large_files.error': '{{Count}} files exceed the maximum size limit of {{Size}}',
   'chat.new_messages_since': 'New messages since {{Time}}',
   'chat.typing.single': '{{Username}} is typing…',
   'chat.typing.multiple': '{{Names}} and {{Lastname}} are typing…',
