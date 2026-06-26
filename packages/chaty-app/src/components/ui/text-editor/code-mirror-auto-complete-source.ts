@@ -1,0 +1,129 @@
+import { useMemo } from 'react'
+import type { Completion, CompletionContext, CompletionResult } from '@codemirror/autocomplete'
+
+import { User } from 'chaty-client/models'
+import emojiMapping from '../../../data/emoji-mapping.json'
+import { useSettingsStore } from '@/state'
+import { useClient } from '@/context/client'
+import { unicodeEmojiUrl } from '@/components/markdown/emoji'
+import { AutoCompleteSearchSpace } from '@/components/common'
+import { isInCodeBlock } from './code-mirror-common'
+
+const EMOJI_KEYS = Object.keys(emojiMapping).sort()
+const MAPPED_EMOJI_KEYS = EMOJI_KEYS.map(
+  (id) =>
+    ({
+      type: 'emoji',
+      label: `:${id}:`,
+      apply: emojiMapping[id as keyof typeof emojiMapping],
+    }) as Completion
+)
+
+const RE_match = /(?<!\w)[:@%#]\w*/
+const RE_emojiValidFor = /(?<!\w):\w*/
+const RE_mentionValidFor = /(?<!\w)@\w*/
+const RE_roleValidFor = /(?<!\w)@\w*/
+const RE_channelValidFor = /(?<!\w)#\w*/
+
+export function codeMirrorAutoCompleteSource(searchSpace: () => AutoCompleteSearchSpace) {
+  const { getValue } = useSettingsStore()
+  const client = useClient()
+
+  const emoji = useMemo(() => {
+    return ([] as Completion[]).concat(
+      MAPPED_EMOJI_KEYS.map((emoji) => ({
+        ...emoji,
+        url: unicodeEmojiUrl(getValue('appearance:unicode_emoji'), emoji.apply as string),
+      })),
+      client.emojis.map((emoji) => ({
+        type: 'emoji',
+        label: `:${emoji.name}:`,
+        apply: `:${emoji.id}: `,
+        url: emoji.url,
+      }))
+    )
+  }, [getValue, client])
+
+  const users = useMemo(() => {
+    const space = searchSpace()
+    const items = space?.members ?? space?.users ?? client.users.toList()
+
+    return items.map((entry) => {
+      // avoiding using `instanceof`, presumed slow
+      const user = ((entry as { user: User })?.user ?? entry) as User
+
+      return {
+        type: 'user',
+        label: '@' + entry.displayName,
+        displayLabel: entry.displayName,
+        detail: entry.displayName !== user.username ? `${user.username}` : undefined,
+        apply: `<@${typeof entry.id === 'string' ? entry.id : entry.id.user}> `,
+        url: entry.animatedAvatarURL,
+      }
+    })
+  }, [searchSpace, client])
+
+  const roles = useMemo(() => {
+    return (
+      searchSpace()?.roles?.map(
+        (entry) =>
+          ({
+            type: 'role',
+            label: '%' + entry.name,
+            displayLabel: entry.name,
+            apply: `<%${entry.id}> `,
+            colour: entry.colour,
+          }) as Completion
+      ) ?? []
+    )
+  }, [searchSpace])
+
+  const channels = useMemo(() => {
+    const items = searchSpace()?.channels ?? client.channels.toList()
+    return items.map(
+      (entry) =>
+        ({
+          type: 'channel',
+          label: '#' + entry.name,
+          apply: `<#${entry.id}> `,
+        }) as Completion
+    )
+  }, [searchSpace, client])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return (context: CompletionContext) => {
+    if (isInCodeBlock(context.state, context.pos, context.pos)) {
+      return null
+    }
+
+    const token = context.matchBefore(RE_match)
+    switch (token?.text[0]) {
+      case ':':
+        return {
+          from: token.from,
+          options: emoji,
+          validFor: RE_emojiValidFor,
+        } as CompletionResult
+      case '@':
+        return {
+          from: token.from,
+          options: users,
+          validFor: RE_mentionValidFor,
+        } as CompletionResult
+      case '%':
+        return {
+          from: token.from,
+          options: roles,
+          validFor: RE_roleValidFor,
+        } as CompletionResult
+      case '#':
+        return {
+          from: token.from,
+          options: channels,
+          validFor: RE_channelValidFor,
+        } as CompletionResult
+      default:
+        return null
+    }
+  }
+}

@@ -169,4 +169,11 @@ export class User {
     if (!this.online) return { text: undefined, presence: 'invisible' as const }
     return { text: this.#user.statusText }
   }
+
+  /**
+   * URL to the user's animated avatar
+   */
+  get animatedAvatarURL(): string {
+    return this.avatar?.createFileURL() ?? this.defaultAvatarURL
+  }
 }

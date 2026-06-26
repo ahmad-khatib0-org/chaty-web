@@ -140,6 +140,20 @@ export class ServerMember {
   }
 
   /**
+   * Display name
+   */
+  get displayName(): string | undefined {
+    return this.nickname ?? this.user?.displayName
+  }
+
+  /**
+   * URL to the member's animated avatar
+   */
+  get animatedAvatarURL(): string | undefined {
+    return this.avatar?.createFileURL() ?? this.user?.animatedAvatarURL
+  }
+
+  /**
    * Get the permissions that this member has against a certain object
    * @param target Target object to check permissions against
    * @returns Permissions that this member has
