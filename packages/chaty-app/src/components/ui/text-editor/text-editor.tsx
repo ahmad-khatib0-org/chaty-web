@@ -66,7 +66,7 @@ const placeholderCompartment = new Compartment()
 /**
  * Text editor powered by CodeMirror
  */
-export function TextEditor2({
+export function TextEditor({
   autoCompleteSearchSpace,
   onChange,
   onTyping,

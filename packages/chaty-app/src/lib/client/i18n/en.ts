@@ -36,4 +36,5 @@ export const TranslationsEN: Translations = {
   'chat.typing.single': '{{Username}} is typing…',
   'chat.typing.multiple': '{{Names}} and {{Lastname}} are typing…',
   'chat.typing.several': 'Several people are typing…',
+  'chat.message.username': 'Message {{Username}}',
 }

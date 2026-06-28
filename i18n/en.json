@@ -542,5 +542,9 @@
   {
     "id": "messages.system.call_started_with_duration",
     "tr": "{{user}} started a call that lasted {{duration}}"
+  },
+  {
+    "id": "messages.save_to_your_notes",
+    "tr": "Save to you notes"
   }
 ]

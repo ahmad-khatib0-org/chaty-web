@@ -34,4 +34,5 @@ export interface Translations {
   'chat.typing.single': string
   'chat.typing.multiple': string
   'chat.typing.several': string
+  'chat.message.username': string
 }

@@ -63,12 +63,19 @@ export class Channel {
   }
 
   /**
+   * Check whether we have a given permission in a channel
+   * @param permission Permission Names
+   * @returns Whether we have this permission
+   */
+  havePermission(...permission: (keyof typeof Permission)[]): boolean {
+    return bitwiseAndEq(this.permission, ...permission.map((x) => Permission[x]))
+  }
+
+  /**
    * ID of the last message sent in this channel
    */
   get lastMessageId(): string | undefined {
-    const group = this.group
-    const text = this.text
-    const direct = this.direct
+    const { group, text, direct } = this
     return group ? group.lastMessageId : text ? text.lastMessageId : direct?.lastMessageId
   }
 

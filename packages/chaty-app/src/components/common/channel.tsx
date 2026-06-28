@@ -16,7 +16,7 @@ import { ObjString } from '@/types/shared'
 import { VoiceChannelCallCardMount } from '../messaging/voice'
 import { NewMessages } from '../messaging/new-messages'
 import Messages from './messages'
-import { TypingIndicator } from '../messaging/composition'
+import { MessageComposition, TypingIndicator } from '../messaging/composition'
 import { MembersSidebar, MessageSearchSidebar } from '../messaging'
 import { MessagesDraft } from '../messaging/messages-draft'
 
@@ -162,7 +162,7 @@ export function Channel({ channel, tr }: Props) {
             jumpToBottomRef={(ref) => (jumpToBottomRef.current = ref)}
             tr={tr}
           />
-          {/* TODO: add a message composition component */}
+          <MessageComposition tr={tr} channel={channel} onMessageSend={() => jumpToBottomRef.current?.()} />
         </main>
         {showSidebar && (
           <div
