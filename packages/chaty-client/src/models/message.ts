@@ -2,6 +2,7 @@ import {
   Interactions,
   Masquerade,
   MessageWebhook as MessageWebhookAPI,
+  Message as APIMessage,
 } from '@chaty-app/proto/web-plain/service/v1/messages_db'
 import type { StringArray } from '@chaty-app/proto/web-plain/shared/v1/types'
 
@@ -16,6 +17,7 @@ import type { Client } from '../client'
 import type { Server } from './server'
 import type { ServerRole } from './server-role'
 import type { File } from './file'
+import type { EmbedSendable } from '@chaty-app/proto/web-plain/service/v1/messages'
 
 export class Message {
   readonly #collection: MessageCollection
@@ -222,6 +224,11 @@ export class Message {
    */
   get isSuppressed(): boolean {
     return (this.flags & 1) === 1
+  }
+
+  // TODO: implement rpc call
+  async edit(data: { content?: string | null; embeds?: EmbedSendable }): Promise<APIMessage> {
+    return APIMessage.create({})
   }
 }
 
