@@ -1,4 +1,5 @@
 import { BehaviorSubject, Observable, share, Subject, Subscription } from 'rxjs'
+import type { createClient } from '@connectrpc/connect'
 
 import type { ChatyConfig } from '@chaty-app/proto/web-plain/service/v1/config'
 
@@ -15,8 +16,10 @@ import {
 } from './collections'
 import { Message, User, Channel } from './models'
 import type { HydratedMessage } from './hydration'
+import type { ChatyService } from '@chaty-app/proto/web/service/v1/main_pb'
 
 export type Session = { id: string; token: string; user_id: string } | string
+export type GrpcClientType = ReturnType<typeof createClient<typeof ChatyService>>
 
 export type Events = {
   error: [error: any]
@@ -88,6 +91,7 @@ export type ClientOptions = Partial<EventClientOptions> & {
  * Chaty Clients
  */
 export class Client {
+  readonly grpcClient: GrpcClientType
   // readonly bots
   readonly servers
   readonly users
@@ -130,7 +134,8 @@ export class Client {
     return this.#connectionFailureCountSubject.value
   }
 
-  constructor(options?: Partial<ClientOptions>, configuration?: ChatyConfig) {
+  constructor(grpcClient: GrpcClientType, options?: Partial<ClientOptions>, configuration?: ChatyConfig) {
+    this.grpcClient = grpcClient
     this.options = {
       baseURL: 'https://stoat.chat/api',
       partials: false,

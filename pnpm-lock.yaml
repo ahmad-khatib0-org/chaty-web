@@ -9,8 +9,8 @@ importers:
   packages/chaty-app:
     dependencies:
       '@chaty-app/proto':
-        specifier: ^0.2.13
-        version: 0.2.13
+        specifier: ^0.2.25
+        version: 0.2.25
       '@codemirror/autocomplete':
         specifier: ^6.20.3
         version: 6.20.3
@@ -250,8 +250,11 @@ importers:
   packages/chaty-client:
     dependencies:
       '@chaty-app/proto':
-        specifier: ^0.2.13
-        version: 0.2.13
+        specifier: ^0.2.17
+        version: 0.2.17
+      '@connectrpc/connect':
+        specifier: ^2.1.2
+        version: 2.1.2(@bufbuild/protobuf@2.12.1)
       '@vladfrangu/async_event_emitter':
         specifier: ^2.4.7
         version: 2.4.7
@@ -348,8 +351,11 @@ packages:
   '@bufbuild/protobuf@2.12.1':
     resolution: {integrity: sha512-BvAMfS6LrgZiryOAZ4pBYucu4wG/Ei/9o9DZ9akbREnMLbPJiom2i8b9C8IsKErQoiKqVhrerzt3kOT/RrzLHg==}
 
-  '@chaty-app/proto@0.2.13':
-    resolution: {integrity: sha512-q8uuXLCi4X/7pby+BJH3aXgZyzbEWOJTvTyKvdwNv8tk+ZLFtjOo+gFVc9NLpenG7n6J2GFtXJ4cZeFxc/8uIA==}
+  '@chaty-app/proto@0.2.17':
+    resolution: {integrity: sha512-feSAEdw9M/pAmvcE+8Sz7VB2Txw7Iy5iBqepOMGNOPR1iiErR0UJZbtf1+mydtElMGpf/CdO8kIHqhpx+1xcYg==}
+
+  '@chaty-app/proto@0.2.25':
+    resolution: {integrity: sha512-idRIKLqPAKBoppvetIVPJclqXEcfRatUoHR4Iu0abwda25EDZP2GkdEDFZiyusFCh9576h4EdG9M2xEJkxNurg==}
 
   '@codemirror/autocomplete@6.20.3':
     resolution: {integrity: sha512-tlosUqb+3BbxCxZdu4tKeRghPFC+QM7q4X5YhKV2eCmPG+1r2F3f4AaSz5sCrFqUtX4Jh20VFTKecl16MgiV9g==}
@@ -3293,7 +3299,14 @@ snapshots:
 
   '@bufbuild/protobuf@2.12.1': {}
 
-  '@chaty-app/proto@0.2.13':
+  '@chaty-app/proto@0.2.17':
+    dependencies:
+      '@bufbuild/protobuf': 2.12.1
+      '@connectrpc/connect': 2.1.2(@bufbuild/protobuf@2.12.1)
+      '@connectrpc/connect-web': 2.1.2(@bufbuild/protobuf@2.12.1)(@connectrpc/connect@2.1.2(@bufbuild/protobuf@2.12.1))
+      '@grpc/grpc-js': 1.14.4
+
+  '@chaty-app/proto@0.2.25':
     dependencies:
       '@bufbuild/protobuf': 2.12.1
       '@connectrpc/connect': 2.1.2(@bufbuild/protobuf@2.12.1)

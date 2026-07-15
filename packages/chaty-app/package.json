@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@chaty-app/proto": "^0.2.13",
+    "@chaty-app/proto": "^0.2.25",
     "@codemirror/autocomplete": "^6.20.3",
     "@codemirror/commands": "^6.10.4",
     "@codemirror/lang-markdown": "^6.5.0",

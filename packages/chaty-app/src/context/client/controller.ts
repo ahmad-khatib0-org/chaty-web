@@ -4,6 +4,7 @@ import { Client } from 'chaty-client'
 import { ConnectionState, ProtocolV1 } from 'chaty-client/events'
 
 import { Session, StoreType } from '@/state'
+import { grpcClient } from '@/lib/client'
 
 export enum State {
   Ready = 'Ready',
@@ -123,7 +124,7 @@ class Lifecycle {
       this.client.events.disconnect()
     }
 
-    this.client = new Client({
+    this.client = new Client(grpcClient(), {
       baseURL: process.env.NEXT_PUBLIC_GRPC_ENDPOINT ?? '',
       autoReconnect: false,
       syncUnreads: true,
