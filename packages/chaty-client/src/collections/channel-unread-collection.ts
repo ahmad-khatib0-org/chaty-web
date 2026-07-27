@@ -1,7 +1,7 @@
 import { ChannelUnread as APIChannelUnread } from '@chaty-app/proto/web-plain/service/v1/channels'
 
 import type { HydratedChannelUnread } from '../hydration'
-import { Channel, ChannelUnread } from '../models'
+import { type Channel, ChannelUnread } from '../models'
 import { ClassCollection } from './collection'
 
 export class ChannelUnreadCollection extends ClassCollection<ChannelUnread, HydratedChannelUnread> {

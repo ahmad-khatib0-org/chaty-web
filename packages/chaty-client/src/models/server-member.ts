@@ -1,10 +1,10 @@
 import type { Role } from '@chaty-app/proto/web-plain/service/v1/roles_db'
 
 import type { ServerMemberCollection } from '../collections'
-import { Server } from './server'
+import type { Server } from './server'
 import type { User } from './user'
 import type { File } from './file'
-import { Channel } from './channel'
+import type { Channel } from './channel'
 import { Permission } from '../permissions'
 import { bitwiseAndEq, calculatePermission } from '../permissions/calculation'
 

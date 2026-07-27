@@ -1,3 +1,5 @@
+export * from './object-storage'
+export * from './collection'
 export * from './server-collection'
 export * from './server-member-collection'
 export * from './message-collection'

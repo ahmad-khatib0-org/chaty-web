@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { Tooltip, Loader } from '@mantine/core'
 import { useInView } from 'react-intersection-observer'
@@ -15,6 +15,8 @@ type Props = {
   tr: ObjString
 }
 
+const FETCH_LIMIT = 10
+
 function GroupsList({ tr }: Props) {
   const info = useAppStore((state) => state.clientInfo)
 
@@ -27,22 +29,26 @@ function GroupsList({ tr }: Props) {
 
   const { inView, ref } = useInView({ threshold: 0 })
 
+  // Use a ref to track the last ID to avoid stale closure issues
+  const lastIdRef = useRef('')
+
+  // Keep the ref in sync with the groups array
+  useEffect(() => {
+    if (groups.length > 0) {
+      lastIdRef.current = groups[groups.length - 1].id
+    }
+  }, [groups])
+
   const fetchGroups = async (pageNum: number) => {
     await new Promise((res) => setTimeout(() => res(''), 50))
 
-    let lastId = ''
-    if (groups.length) lastId = groups[groups.length - 1].id
-
     try {
-      const res = await grpcClient().groupsList({ pagination: { page: pageNum, lastId } })
+      const res = await grpcClient().groupsList({ pagination: { page: pageNum, lastId: lastIdRef.current } })
       if (res.response.case === 'error') {
         return { error: res.response.value.message }
       }
       if (res.response.case === 'data') {
-        return {
-          groups: res.response.value.groups,
-          hasMore: res.response.value.pagination?.hasNext ?? false,
-        }
+        return { groups: res.response.value.groups }
       }
     } catch (err) {
       return { error: handleGrpcErr(err, info.languageSymbol) }
@@ -59,14 +65,21 @@ function GroupsList({ tr }: Props) {
     if (result?.error) {
       setError(result.error)
     } else {
-      setHasMore(result?.hasMore ?? false)
+      const newGroups = result?.groups ?? []
+      const more = newGroups.length >= FETCH_LIMIT
+      setHasMore(more)
       setPage((prevPage) => prevPage + 1)
-      setGroups((prevGroups) => [...prevGroups, ...(result?.groups ?? [])])
+      // Deduplicate by ID to prevent any duplicate keys
+      setGroups((prevGroups) => {
+        const existingIds = new Set(prevGroups.map((g) => g.id))
+        const uniqueNewGroups = newGroups.filter((g) => !existingIds.has(g.id))
+        return [...prevGroups, ...uniqueNewGroups]
+      })
     }
 
     setLoading(false)
     setInitialLoadAttempted(true)
-  }, [loading, hasMore, page, groups.length, error])
+  }, [loading, hasMore, page, error])
 
   useEffect(() => {
     if (!initialLoadAttempted) loadGroups()

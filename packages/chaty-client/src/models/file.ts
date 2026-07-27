@@ -1,6 +1,6 @@
 import { File as APIFile, FileMetadata } from '@chaty-app/proto/web-plain/shared/v1/files'
 
-import { Client } from '../client'
+import type { Client } from '../client'
 
 export class File {
   readonly #file: APIFile

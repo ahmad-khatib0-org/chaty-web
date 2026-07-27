@@ -122,11 +122,12 @@ export class EventClient<T extends AvailableProtocols> {
       heartbeatInterval: 30,
       pongTimeout: 10,
       connectTimeout: 10,
-      debug: false,
+      debug: options?.debug ?? false,
       ...options,
     }
 
-    this.setupHeartbeat()
+    // TODO: add it again when you setup the ws on the backend
+    // this.setupHeartbeat()
   }
 
   private setupHeartbeat(): void {

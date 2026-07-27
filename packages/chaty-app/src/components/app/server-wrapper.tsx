@@ -4,6 +4,7 @@ import { Notifications } from '@mantine/notifications'
 
 import ClientWrapper from '@/components/app/client-wrapper'
 import { getClientInformation } from '@/lib/server'
+import { ClientContext } from '@/context/client'
 
 type Props = {
   children: React.ReactNode
@@ -20,9 +21,11 @@ async function ServerWrapper({ children }: Props) {
       <body suppressHydrationWarning={true}>
         <div id='floating' />
         <MantineProvider>
-          <ClientWrapper clientInfo={{ languageSymbol, languageName, currency, country: location }}>
-            {children}
-          </ClientWrapper>
+          <ClientContext>
+            <ClientWrapper clientInfo={{ languageSymbol, languageName, currency, country: location }}>
+              {children}
+            </ClientWrapper>
+          </ClientContext>
           <Notifications />
         </MantineProvider>
       </body>

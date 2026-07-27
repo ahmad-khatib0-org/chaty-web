@@ -1,4 +1,4 @@
-import { Client } from '../client'
+import type { Client } from '../client'
 import type { HydratedUser } from '../hydration'
 import type { User } from '../models'
 import { ClassCollection } from './collection'

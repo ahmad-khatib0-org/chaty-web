@@ -113,17 +113,6 @@ class Lifecycle {
     this.onPolicyChanges = this.onPolicyChanges.bind(this)
     this.onState = this.onState.bind(this)
 
-    this.client = null!
-    this.dispose()
-  }
-
-  private dispose() {
-    if (this.client) {
-      this.#subscriptions.unsubscribe()
-      this.#subscriptions = new Subscription()
-      this.client.events.disconnect()
-    }
-
     this.client = new Client(grpcClient(), {
       baseURL: process.env.NEXT_PUBLIC_GRPC_ENDPOINT ?? '',
       autoReconnect: false,
@@ -147,12 +136,19 @@ class Lifecycle {
       ws: process.env.NEXT_PUBLIC_WS_URL ?? '',
     }
 
-    this.client = null!
     this.#subscriptions.add(this.client.events.on.state.subscribe(this.onState))
     this.#subscriptions.add(this.client.on('ready').subscribe(this.onReady))
     this.#subscriptions.add(
       this.client.on('policyChanges').subscribe(([changes, ack]) => this.onPolicyChanges(changes, ack))
     )
+  }
+
+  private dispose() {
+    if (this.client) {
+      this.#subscriptions.unsubscribe()
+      this.#subscriptions = new Subscription()
+      this.client.events.disconnect()
+    }
   }
 
   #enter(nextState: State) {

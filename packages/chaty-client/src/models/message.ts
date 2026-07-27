@@ -1,7 +1,7 @@
 import {
-  Interactions,
-  Masquerade,
-  MessageWebhook as MessageWebhookAPI,
+  type Interactions,
+  type Masquerade,
+  type MessageWebhook as MessageWebhookAPI,
   Message as APIMessage,
 } from '@chaty-app/proto/web-plain/service/v1/messages_db'
 import type { StringArray } from '@chaty-app/proto/web-plain/shared/v1/types'

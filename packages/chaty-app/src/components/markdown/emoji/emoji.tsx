@@ -10,8 +10,7 @@ export function EmojiBase({ src, alt }: { src?: string; alt?: string }) {
       alt={alt}
       className={`
         object-contain inline-block w-(--emoji-size) h-(--emoji-size) mx-[0.05em] ml-[0.1em]
-        align-[-0.3em] text-transparent relative before:content-[' '] before:block 
-        before:absolute before:h-12.5 before:w-12.5 before:bg-[url(ishere.jpg)]`}
+        align-[-0.3em] text-transparent`}
     />
   )
 }

@@ -1,4 +1,4 @@
-import {
+import type {
   MessageSystem as APIMessageSystem,
   MessageSystemText,
   MessageSystemUserAdded,

@@ -7,7 +7,7 @@ import type {
   ChannelText,
 } from '@chaty-app/proto/web-plain/service/v1/channels_db'
 import type { MessageIntent } from '@chaty-app/proto/web-plain/service/v1/messages'
-import { ChannelCollection, MessageCollection } from '../collections'
+import { type ChannelCollection, MessageCollection } from '../collections'
 import type { User } from './user'
 import type { Server } from './server'
 import { Message } from './message'

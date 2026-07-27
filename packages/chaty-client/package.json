@@ -36,7 +36,7 @@
   "description": "Library for interacting with the Chaty API",
   "packageManager": "pnpm@10.16.1",
   "dependencies": {
-    "@chaty-app/proto": "^0.2.17",
+    "@chaty-app/proto": "^0.2.36",
     "@connectrpc/connect": "^2.1.2",
     "@vladfrangu/async_event_emitter": "^2.4.7",
     "json-with-bigint": "^3.5.7",

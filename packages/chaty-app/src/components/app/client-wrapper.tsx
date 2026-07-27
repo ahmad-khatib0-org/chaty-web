@@ -18,31 +18,35 @@ type Props = {
 
 function ClientWrapper({ clientInfo, children }: Props) {
   const { setClientEssentialInfo, setClientInfo, setClientConnState } = useAppStore()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const client = useClient()
 
+  // TODO: add it again when you setup the ws on the backend
   const initConnectionStateObservable = () => {
-    client.events.on.state.subscribe((state) => setClientConnState(state))
+    // client.events.on.state.subscribe((state) => setClientConnState(state))
   }
 
   const initInfo = async () => {
-    if (loading) return
-    setLoading(true)
     setClientEssentialInfo(clientInfo)
-
     try {
       const enhancedClientInfo = await trackClient({}, { enableFingerprinting: true })
       setClientInfo({ ...enhancedClientInfo })
     } catch (err) {
       console.error(err)
-    } finally {
-      setLoading(false)
     }
   }
 
-  useEffect(() => {
-    initInfo()
+  const init = async () => {
+    if (loading) return
+    setLoading(true)
+
+    await initInfo()
     initConnectionStateObservable()
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    init()
   }, [])
 
   if (loading) return <Loader />

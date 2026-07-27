@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs'
 
-import { hydrate, type Hydrators } from '../hydration'
+import { type Hydrators } from '../hydration'
 
 /**
  * Wrapper around RxJS BehaviorSubject store
@@ -62,8 +62,9 @@ export class ObjectStorage<T> {
    * @param context Context
    * @param data Input Data
    */
-  hydrate(id: string, type: keyof Hydrators, context: unknown, data?: unknown) {
+  async hydrate(id: string, type: keyof Hydrators, context: unknown, data?: unknown) {
     if (data) {
+      const { hydrate } = await import('../hydration')
       data = { partial: false, ...data }
       this.set(id, hydrate(type, data as never, context, true) as T)
     }

@@ -33,6 +33,8 @@ export type Events = {
 
   messageCreate: [message: Message]
   messageDelete: [message: HydratedMessage]
+
+  channelCreate: [channel: Channel]
 }
 
 /**
